@@ -2,10 +2,12 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(XMSG_HEADERS
   xmsg_constants.h
+  xmsg_topic.h
   xmsg_util.h
 )
 
 set(XMSG_FILES
+  xmsg_topic.cpp
   xmsg_util.cpp
 )
 
