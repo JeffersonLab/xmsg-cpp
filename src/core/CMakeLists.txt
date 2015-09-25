@@ -6,6 +6,7 @@ set(XMSG_HEADERS
   xmsg_connection.h
   xmsg_connection_pool.h
   xmsg_connection_setup.h
+  xmsg_message.h
   xmsg_topic.h
   xmsg_util.h
 )
