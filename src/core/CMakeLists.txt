@@ -3,12 +3,14 @@ include_directories(${ZMQ_INCLUDE_DIRS})
 set(XMSG_HEADERS
   xmsg_address.h
   xmsg_constants.h
+  xmsg_connection.h
   xmsg_topic.h
   xmsg_util.h
 )
 
 set(XMSG_FILES
   xmsg_address.cpp
+  xmsg_connection.cpp
   xmsg_regdis.cpp
   xmsg_topic.cpp
   xmsg_util.cpp
