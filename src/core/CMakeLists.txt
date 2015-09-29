@@ -9,6 +9,7 @@ set(XMSG_HEADERS
 
 set(XMSG_FILES
   xmsg_address.cpp
+  xmsg_regdis.cpp
   xmsg_topic.cpp
   xmsg_util.cpp
 )
