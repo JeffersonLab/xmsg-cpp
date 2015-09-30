@@ -26,6 +26,7 @@
 
 #include "xmsg_address.h"
 #include "xmsg_connection.h"
+#include "xmsg_message.h"
 #include "xmsg_registration.h"
 #include "xmsg_topic.h"
 
@@ -73,6 +74,9 @@ public:
     void set_connection_setup(std::unique_ptr<ConnectionSetup> setup);
 
     void release(std::unique_ptr<Connection>&& connection);
+
+public:
+    void publish(std::unique_ptr<Connection>& connection, Message& msg);
 
 public:
     void register_as_publisher(const Topic& topic,
