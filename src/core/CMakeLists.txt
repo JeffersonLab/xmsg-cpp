@@ -1,6 +1,7 @@
 include_directories(${ZMQ_INCLUDE_DIRS})
 
 set(XMSG_HEADERS
+  xmsg.h
   xmsg_address.h
   xmsg_constants.h
   xmsg_connection.h
@@ -12,6 +13,7 @@ set(XMSG_HEADERS
 )
 
 set(XMSG_FILES
+  xmsg.cpp
   xmsg_address.cpp
   xmsg_connection.cpp
   xmsg_connection_pool.cpp
