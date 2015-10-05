@@ -1,4 +1,3 @@
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${ZMQ_INCLUDE_DIRS})
 
 set(XMSG_HEADERS
@@ -14,6 +13,7 @@ set(XMSG_FILES
 
 add_library(xmsg SHARED ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto>)
 target_link_libraries(xmsg xmsgproto_headers ${ZMQ_LIBRARIES})
+target_include_directories(xmsg PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 install(FILES ${XMSG_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(TARGETS xmsg DESTINATION ${CMAKE_INSTALL_LIBDIR})

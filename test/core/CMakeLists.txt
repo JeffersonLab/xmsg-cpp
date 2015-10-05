@@ -1,4 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${GMOCK_INCLUDE_DIRS})
 
 add_executable(test_topic xmsg_topic_test.cpp)

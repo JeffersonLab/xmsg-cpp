@@ -1,4 +1,3 @@
-include_directories(${PROJECT_SOURCE_DIR}/src/core)
 include_directories(${ZMQ_INCLUDE_DIRS})
 
 add_executable(cx_proxy xmsg_proxy.cpp)
