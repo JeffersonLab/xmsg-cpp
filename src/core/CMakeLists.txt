@@ -20,6 +20,7 @@ set(XMSG_FILES
   xmsg_connection_setup.cpp
   xmsg_regdis.cpp
   xmsg_topic.cpp
+  xmsg_subscription.cpp
   xmsg_util.cpp
 )
 

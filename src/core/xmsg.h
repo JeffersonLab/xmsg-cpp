@@ -28,8 +28,10 @@
 #include "xmsg_connection.h"
 #include "xmsg_message.h"
 #include "xmsg_registration.h"
+#include "xmsg_subscription.h"
 #include "xmsg_topic.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <set>
@@ -77,6 +79,13 @@ public:
 
 public:
     void publish(std::unique_ptr<Connection>& connection, Message& msg);
+
+    std::unique_ptr<Subscription>
+    subscribe(const Topic& topic,
+              std::unique_ptr<Connection> connection,
+              std::function<void(Message&)> callback);
+
+    void unsubscribe(std::unique_ptr<Subscription> handler);
 
 public:
     void register_as_publisher(const Topic& topic,
