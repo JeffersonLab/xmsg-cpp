@@ -4,6 +4,7 @@ set(XMSG_HEADERS
   xmsg_address.h
   xmsg_constants.h
   xmsg_connection.h
+  xmsg_connection_pool.h
   xmsg_connection_setup.h
   xmsg_topic.h
   xmsg_util.h
@@ -12,6 +13,7 @@ set(XMSG_HEADERS
 set(XMSG_FILES
   xmsg_address.cpp
   xmsg_connection.cpp
+  xmsg_connection_pool.cpp
   xmsg_connection_setup.cpp
   xmsg_regdis.cpp
   xmsg_topic.cpp
