@@ -1,5 +1,10 @@
 include_directories(${GMOCK_INCLUDE_DIRS})
 
+add_executable(test_message xmsg_message_test.cpp)
+add_dependencies(test_message googlemock)
+add_test(test_message test_message)
+target_link_libraries(test_message xmsg ${GMOCK_LIBRARIES})
+
 add_executable(test_topic xmsg_topic_test.cpp)
 add_dependencies(test_topic googlemock)
 add_test(test_topic test_topic)
