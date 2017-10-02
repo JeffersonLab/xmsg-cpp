@@ -29,6 +29,8 @@ Build options:
 Installation directory:
   --prefix=PREFIX           installation directory [/usr/local]
 
+Features (use --enable-FEATURE or --disable-FEATURE):
+  tests                     compile tests [enabled]
 EOF
 }
 
@@ -67,10 +69,14 @@ prefix=/usr/local
 cmake_cache=""
 cmake_env=""
 
+build_tests="ON"
+
 # parse arguments
 while [ $# -ne 0 ]; do
     case "$1" in
         -*=*) optarg="$(ensure_value "$1")" ;;
+        --enable-*) optarg="ON" ;;
+        --disable-*) optarg="OFF" ;;
         *) optarg= ;;
     esac
 
@@ -88,6 +94,9 @@ while [ $# -ne 0 ]; do
         --prefix=*)
             prefix="${optarg}"
             ;;
+        --*able-tests)
+            build_tests="${optarg}"
+            ;;
         *)
             echo "Error: unrecognized option '$1'"
             echo "Try $0 --help for more information"
@@ -101,6 +110,8 @@ done
 # set cmake configuration
 add_cache_entry CMAKE_BUILD_TYPE STRING ${build_type}
 add_cache_entry CMAKE_INSTALL_PREFIX PATH "\"${prefix}\""
+
+add_cache_entry XMSG_BUILD_TESTS BOOL ${build_tests}
 
 
 # generate config.status
