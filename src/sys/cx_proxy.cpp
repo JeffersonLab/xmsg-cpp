@@ -23,6 +23,10 @@
 
 #include <xmsg/proxy.h>
 
+#include <xmsg/constants.h>
+#include <xmsg/util.h>
+
+#include <algorithm>
 #include <csignal>
 #include <cstdlib>
 #include <ctime>
@@ -70,10 +74,39 @@ std::string current_time()
 }
 
 
-int main()
+// Based on <https://stackoverflow.com/a/868894/401753> by
+// <https://stackoverflow.com/users/85381/iain>.
+char* get_option(char** begin, char** end, const std::string& option)
+{
+    char** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end) {
+        return *itr;
+    }
+    return 0;
+}
+
+
+xmsg::ProxyAddress get_address(int argc, char** argv)
+{
+    std::string host = xmsg::util::localhost();
+    int port = xmsg::constants::default_port;
+
+    char* arg;
+    if ((arg = get_option(argv, argv + argc, "--host")) != nullptr) {
+        host = xmsg::util::to_host_addr(arg);
+    }
+    if ((arg = get_option(argv, argv + argc, "--port")) != nullptr) {
+        port = std::stoi(arg);
+    }
+
+    return {host, port};
+}
+
+
+int main(int argc, char** argv)
 {
     try {
-        xmsg::ProxyAddress addr{};
+        xmsg::ProxyAddress addr = get_address(argc, argv);
         xmsg::sys::Proxy proxy{addr};
         proxy.start();
 
