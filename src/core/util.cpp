@@ -36,6 +36,11 @@ namespace {
 
 std::vector<std::string> localhost_addrs;
 
+// clang-format off
+const auto ip_regex = std::regex{"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
+                                     "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"};
+// clang-format on
+
 }
 
 
@@ -105,11 +110,7 @@ std::string to_host_addr(const std::string& hostname)
 
 bool is_ipaddr(const std::string& hostname)
 {
-    // clang-format off
-    auto r = std::regex{"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
-                            "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"};
-    // clang-format on
-    return std::regex_match(hostname, r);
+    return std::regex_match(hostname, ip_regex);
 }
 
 
