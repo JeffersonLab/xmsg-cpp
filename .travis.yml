@@ -1,6 +1,8 @@
 language: cpp
 sudo: false
 
+cache: ccache
+
 matrix:
   include:
     - env: GCC_VERSION=4.9 BUILD_TYPE=Release

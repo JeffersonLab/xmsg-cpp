@@ -33,6 +33,7 @@ if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     wget --no-check-certificate --quiet -O - "${ZMQ_URL}"   | tar --strip-components=1 -xz -C "${ZMQ_SRC_DIR}"
     (cd "${ZMQ_SRC_DIR}"   && ./configure --prefix="${INSTALL_DIR}" && make && make install)
 else
+    brew install ccache
     brew install zeromq
     if [[ "$(brew config | grep macOS)" =~ 10.10 ]]; then
         brew install protobuf@2.6
