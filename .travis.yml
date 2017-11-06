@@ -32,7 +32,7 @@ install:
 
 before_script:
   - cd "${TRAVIS_BUILD_DIR}"
-  - ./configure --build-type=${BUILD_TYPE}
+  - ./configure --prefix=${INSTALL_DIR} --build-type=${BUILD_TYPE}
   - make
 
 script:

@@ -13,19 +13,6 @@ if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
 fi
 
 ############################################################################
-# Install a recent CMake (unless already installed on OS X)
-############################################################################
-if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    echo "Downloading CMake binary..."
-    CMAKE_URL=https://cmake.org/files/v3.1/cmake-3.1.3-Linux-x86_64.tar.gz
-    wget --no-check-certificate --quiet -O - "${CMAKE_URL}" | tar --strip-components=1 -xz -C "${INSTALL_DIR}"
-else
-    if ! brew ls --version cmake &>/dev/null; then
-        brew install cmake
-    fi
-fi
-
-############################################################################
 # Install the right versions of Protocol Buffers and 0MQ
 ############################################################################
 if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
