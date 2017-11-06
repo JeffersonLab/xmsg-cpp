@@ -47,5 +47,10 @@ if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     (cd "${ZMQ_SRC_DIR}"   && ./configure --prefix="${INSTALL_DIR}" && make && make install)
 else
     brew install zeromq
-    brew install protobuf
+    if [[ "$(brew config | grep macOS)" =~ 10.10 ]]; then
+        brew install protobuf@2.6
+        brew link --force protobuf@2.6
+    else
+        brew install protobuf
+    fi
 fi
