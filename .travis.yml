@@ -1,41 +1,63 @@
 language: cpp
-sudo: false
 
-cache: ccache
+cache:
+  ccache: true
+  directories:
+    - $HOME/.local/cget/unlink
+
+env:
+  global:
+    - BUILD_TYPE=RelWithDebInfo
+    - INSTALL_DIR=~/.local
+    - CGET_PREFIX=$INSTALL_DIR
+    - MAKEFLAGS=-j2
 
 matrix:
   include:
-    - env: GCC_VERSION=4.9 BUILD_TYPE=Release
-      os: linux
-      addons: &gcc49
+    - os: linux
+      dist: xenial
+      group: travis_latest
+      addons:
         apt:
-          packages: g++-4.9
-          sources: &sources
+          packages:
+            - libzmq5-dev
+            - libprotobuf-dev
+            - protobuf-compiler
+
+    - os: linux
+      dist: xenial
+      group: travis_latest
+      env:
+        - MATRIX_EVAL="export CC=gcc-8 CXX=g++-8"
+        - ZMQ_VERSION=4.2.5
+        - PROTO_VERSION=3.6.1
+      addons:
+        apt:
+          packages:
+            - g++-8
+          sources:
             - ubuntu-toolchain-r-test
-    - env: GCC_VERSION=5 BUILD_TYPE=Release
-      os: linux
-      addons: &gcc5
-        apt:
-          packages: g++-5
-          sources: *sources
-    - env: BUILD_TYPE=Release
-      os: osx
-      osx_image: xcode6.4
-      compiler: clang
-    - env: BUILD_TYPE=Release
-      os: osx
-      osx_image: xcode8
-      compiler: clang
+      before_install:
+        - eval "${MATRIX_EVAL}"
+        - CCACHE_DISABLE=1 pip install --user cget
+      install:
+        - mkdir -p "${CGET_PREFIX}"/cget/pkg # pfultz2/cget#68
+        - CCACHE_DISABLE=1 cget install --cmake autotools
+          protobuf,https://github.com/protocolbuffers/protobuf/releases/download/v${PROTO_VERSION}/protobuf-cpp-${PROTO_VERSION}.tar.gz
+        - CCACHE_DISABLE=1 cget install --cmake autotools
+          zeromq,https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz
+      before_cache:
+        - mv ${CGET_PREFIX}/cget/pkg/* ${CGET_PREFIX}/cget/unlink # pfultz2/cget#67
 
-install:
-  - if [[ -n "$GCC_VERSION" ]]; then export CXX=g++-$GCC_VERSION CC=gcc-$GCC_VERSION; fi
-  - export INSTALL_DIR=${HOME}/.local MAKEFLAGS="-j 2"
-  - ./.travis/install.sh
-
-before_script:
-  - cd "${TRAVIS_BUILD_DIR}"
-  - ./configure --prefix=${INSTALL_DIR} --build-type=${BUILD_TYPE}
-  - make
+    - os: osx
+      addons:
+        homebrew:
+          packages:
+            - ccache
+            - zeromq
+            - protobuf
 
 script:
-  - make check
+  - ./configure --prefix=${INSTALL_DIR} --build-type=${BUILD_TYPE} &&
+    make &&
+    make check
