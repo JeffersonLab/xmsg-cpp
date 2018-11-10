@@ -1,35 +1,60 @@
-include_directories(${PROJECT_SOURCE_DIR}/src/core)
+#----------------------------------------------------------------------
+# Public interface tests
+#
+set(XMSG_PUBLIC_TESTS
+  context
+  message
+  topic
+  util
+)
 
-add_executable(test_context context_test.cpp)
-add_test(test_context test_context)
-target_link_libraries(test_context xmsg gmock)
+foreach(name IN LISTS XMSG_PUBLIC_TESTS)
+  add_executable(test_${name} ${name}_test.cpp)
+  add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS $<CONFIG> "")
+  set_tests_properties(test_${name} PROPERTIES LABELS "unit;public")
+  target_link_libraries(test_${name} PRIVATE xMsg::xMsg gmock)
+endforeach()
 
-add_executable(test_connection_pool connection_pool_test.cpp)
-add_test(test_connection_pool test_connection_pool)
-target_link_libraries(test_connection_pool xmsg gmock)
 
-add_executable(test_message message_test.cpp)
-add_test(test_message test_message)
-target_link_libraries(test_message xmsg gmock)
+#----------------------------------------------------------------------
+# Internal implementation tests
+#
+set(XMSG_INTERNAL_TESTS
+  connection_pool
+  regdis
+  zhelper
+)
 
-add_executable(test_topic topic_test.cpp)
-add_test(test_topic test_topic)
-target_link_libraries(test_topic xmsg gmock)
+foreach(name IN LISTS XMSG_INTERNAL_TESTS)
+  add_executable(test_${name} ${name}_test.cpp)
+  add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS $<CONFIG> "")
+  set_tests_properties(test_${name} PROPERTIES LABELS "unit;private")
+  target_include_directories(test_${name} PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
+  target_link_libraries(test_${name} PRIVATE xMsg::xMsg gmock)
+endforeach()
 
-add_executable(test_util util_test.cpp)
-add_test(test_util test_util)
-target_link_libraries(test_util xmsg gmock)
 
-add_executable(test_helper zhelper_test.cpp)
-add_test(test_helper test_helper)
-target_link_libraries(test_helper xmsg gmock)
+#----------------------------------------------------------------------
+# Slow integration tests
+#
+set(XMSG_INTEGRATION_TESTS
+  subscription
+)
 
-add_executable(test_subscription subscription_test.cpp)
-target_link_libraries(test_subscription xmsg gmock)
+foreach(name IN LISTS XMSG_INTEGRATION_TESTS)
+  add_executable(test_${name} ${name}_test.cpp)
+  add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS Integration)
+  set_tests_properties(test_${name} PROPERTIES LABELS "integration;slow" RUN_SERIAL TRUE)
+  target_link_libraries(test_${name} PRIVATE xMsg::xMsg gmock)
+endforeach()
 
-add_executable(test_regdis regdis_test.cpp)
-add_test(test_regdis test_regdis)
-target_link_libraries(test_regdis xmsg gmock)
+add_custom_target(integration_test
+  COMMAND ${CMAKE_CTEST_COMMAND} -C Integration)
 
+
+#----------------------------------------------------------------------
+# Standalone executable tests
+#
 add_executable(test_registration registrar_test.cpp)
-target_link_libraries(test_registration xmsg gmock)
+target_link_libraries(test_registration PRIVATE xMsg::xMsg)
+target_include_directories(test_registration PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
