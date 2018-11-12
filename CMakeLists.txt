@@ -69,23 +69,23 @@ set(CMAKE_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/xmsg")
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    ${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
-    ${PROJECT_BINARY_DIR}/xmsg-config.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg-config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
   NO_SET_AND_CHECK_MACRO
   NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 install(FILES
-    ${PROJECT_BINARY_DIR}/xmsg-config.cmake
-    ${PROJECT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
-    ${PROJECT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg-config.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
   DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
   COMPONENT Devel)
 
 
 # export targets
 export(EXPORT xMsgTargets
-  FILE ${PROJECT_BINARY_DIR}/xmsg-targets.cmake
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/xmsg-targets.cmake
   NAMESPACE xMsg::
 )
 
@@ -98,21 +98,21 @@ install(EXPORT xMsgTargets
 
 # pkg-config
 configure_file(
-    ${PROJECT_SOURCE_DIR}/cmake/xmsg.pc.in
-    ${PROJECT_BINARY_DIR}/xmsg.pc
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/xmsg.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg.pc
   @ONLY
 )
 
-install(FILES ${PROJECT_BINARY_DIR}/xmsg.pc
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xmsg.pc
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
   COMPONENT Devel)
 
 
 # uninstall target
 configure_file(
-  "${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-  "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
 add_custom_target(uninstall
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake)
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)

@@ -16,14 +16,14 @@ set(XMSG_FILES
 add_library(xmsg SHARED ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto>)
 target_link_libraries(xmsg xmsgproto_headers ZeroMQ::libzmq)
 target_include_directories(xmsg PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_include_directories(xmsg SYSTEM PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/third_party>)
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/third_party>)
 
 add_library(xMsg::xMsg ALIAS xmsg)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/xmsg/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/xmsg/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xmsg
   COMPONENT Devel
 )

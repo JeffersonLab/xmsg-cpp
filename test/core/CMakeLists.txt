@@ -1,4 +1,4 @@
-include_directories(${CMAKE_SOURCE_DIR}/src/core)
+include_directories(${PROJECT_SOURCE_DIR}/src/core)
 
 add_executable(test_context context_test.cpp)
 add_test(test_context test_context)
