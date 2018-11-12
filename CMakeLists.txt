@@ -62,8 +62,13 @@ if(APPLE)
 endif()
 
 
-find_package(Protobuf 2.5 REQUIRED)
-find_package(ZeroMQ 4.0 REQUIRED)
+set(XMSG_ZEROMQ_MIN_VERSION 4.0)
+set(XMSG_PROTOBUF_MIN_VERSION 2.5)
+
+find_package(ZeroMQ ${XMSG_ZEROMQ_MIN_VERSION} REQUIRED)
+find_package(Protobuf ${XMSG_PROTOBUF_MIN_VERSION} REQUIRED)
+
+include(EnsureProtobufTarget)
 
 
 option(XMSG_BUILD_TESTS "Build tests" ON)
@@ -93,7 +98,10 @@ install(EXPORT xMsgTargets
   NAMESPACE xMsg::
   DESTINATION ${CMAKE_INSTALL_CONFIGDIR})
 
-install(FILES ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
+install(FILES
+    ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
+    ${PROJECT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
   DESTINATION ${CMAKE_INSTALL_CONFIGDIR} COMPONENT Devel)
 
 

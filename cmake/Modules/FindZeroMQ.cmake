@@ -46,6 +46,14 @@ find_package_handle_standard_args(ZeroMQ
 if(ZeroMQ_FOUND)
   set(ZeroMQ_LIBRARIES ${ZeroMQ_LIBRARY})
   set(ZeroMQ_INCLUDE_DIRS ${ZeroMQ_INCLUDE_DIR})
+
+  if(NOT TARGET ZeroMQ::libzmq)
+    add_library(ZeroMQ::libzmq SHARED IMPORTED)
+    set_target_properties(ZeroMQ::libzmq PROPERTIES
+        IMPORTED_LOCATION ${ZeroMQ_LIBRARY}
+        INTERFACE_INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
+    )
+  endif()
 endif()
 
 mark_as_advanced(ZeroMQ_LIBRARY ZeroMQ_INCLUDE_DIR)
