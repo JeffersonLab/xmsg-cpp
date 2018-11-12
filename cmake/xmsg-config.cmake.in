@@ -8,6 +8,10 @@ find_dependency(Protobuf @XMSG_PROTOBUF_MIN_VERSION@)
 include(EnsureProtobufTarget)
 set(CMAKE_MODULE_PATH ${OLD_CMAKE_MODULE_PATH})
 
-set_and_check(XMSG_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
-include("${CMAKE_CURRENT_LIST_DIR}/xmsg-targets.cmake")
-set(XMSG_LIBRARIES xmsg)
+set(xMsg_CONFIG ${CMAKE_CURRENT_LIST_FILE})
+find_package_handle_standard_args(xMsg CONFIG_MODE)
+mark_as_advanced(xMsg_DIR)
+
+if(NOT TARGET xMsg::xMsg)
+  include(${CMAKE_CURRENT_LIST_DIR}/xmsg-targets.cmake)
+endif()

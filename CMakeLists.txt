@@ -88,21 +88,25 @@ endif()
 
 # export targets
 include(CMakePackageConfigHelpers)
-configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
-  ${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
+configure_package_config_file(
+    ${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
+    ${PROJECT_BINARY_DIR}/xmsg-config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-  PATH_VARS CMAKE_INSTALL_INCLUDEDIR)
+  NO_SET_AND_CHECK_MACRO
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 install(EXPORT xMsgTargets
   FILE xmsg-targets.cmake
   NAMESPACE xMsg::
-  DESTINATION ${CMAKE_INSTALL_CONFIGDIR})
+  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
 
 install(FILES
-    ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
+    ${PROJECT_BINARY_DIR}/xmsg-config.cmake
     ${PROJECT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
     ${PROJECT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
-  DESTINATION ${CMAKE_INSTALL_CONFIGDIR} COMPONENT Devel)
+  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
 
 
 # uninstall target
