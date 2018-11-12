@@ -6,35 +6,7 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 
-
-if(NOT CMAKE_INSTALL_BINDIR)
-  set(CMAKE_INSTALL_BINDIR "bin" CACHE PATH "user executables (bin)")
-endif()
-
-if(NOT CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "object code libraries (lib)")
-endif()
-
-if(NOT CMAKE_INSTALL_SHAREDIR)
-  set(CMAKE_INSTALL_SHAREDIR "share" CACHE PATH "other files (share)")
-endif()
-
-if(NOT CMAKE_INSTALL_INCLUDEDIR)
-  set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE PATH "header files (include)")
-endif()
-
-if(NOT CMAKE_INSTALL_CONFIGDIR)
-  set(CMAKE_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/xmsg"
-    CACHE PATH "CMake project files (${CMAKE_INSTALL_LIBDIR}/cmake/xmsg")
-endif()
-
-mark_as_advanced(
-  CMAKE_INSTALL_BINDIR
-  CMAKE_INSTALL_LIBDIR
-  CMAKE_INSTALL_SHAREDIR
-  CMAKE_INSTALL_INCLUDEDIR
-  CMAKE_INSTALL_CONFIGDIR
-)
+include(GNUInstallDirs)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -91,6 +63,8 @@ endif()
 
 
 # package configuration
+set(CMAKE_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/xmsg")
+
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     ${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
