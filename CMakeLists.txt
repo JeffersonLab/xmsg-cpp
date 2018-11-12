@@ -90,7 +90,7 @@ if(XMSG_BUILD_TESTS)
 endif()
 
 
-# export targets
+# package configuration
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
     ${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
@@ -99,16 +99,23 @@ configure_package_config_file(
   NO_SET_AND_CHECK_MACRO
   NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
-install(EXPORT xMsgTargets
-  FILE xmsg-targets.cmake
-  NAMESPACE xMsg::
-  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-  COMPONENT Devel)
-
 install(FILES
     ${PROJECT_BINARY_DIR}/xmsg-config.cmake
     ${PROJECT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
     ${PROJECT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
+  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
+
+
+# export targets
+export(EXPORT xMsgTargets
+  FILE ${PROJECT_BINARY_DIR}/xmsg-targets.cmake
+  NAMESPACE xMsg::
+)
+
+install(EXPORT xMsgTargets
+  FILE xmsg-targets.cmake
+  NAMESPACE xMsg::
   DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
   COMPONENT Devel)
 

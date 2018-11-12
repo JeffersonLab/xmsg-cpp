@@ -21,6 +21,8 @@ target_include_directories(xmsg PUBLIC
 target_include_directories(xmsg SYSTEM PUBLIC
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/third_party>)
 
+add_library(xMsg::xMsg ALIAS xmsg)
+
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/xmsg/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xmsg
   COMPONENT Devel
