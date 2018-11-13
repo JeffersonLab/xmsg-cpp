@@ -10,6 +10,12 @@ endif()
 
 include(GNUInstallDirs)
 
+option(XMSG_BUILD_TESTS "Build tests" ON)
+option(XMSG_BUILD_SHARED_LIBS "Build shared libs" ON)
+
+mark_as_advanced(XMSG_BUILD_SHARED_LIBS)
+set(BUILD_SHARED_LIBS ${XMSG_BUILD_SHARED_LIBS})
+
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -48,8 +54,6 @@ string(CONCAT PKGCONF_REQ_PUB
   "libzmq >= ${XMSG_ZEROMQ_MIN_VERSION}, "
   "protobuf >= ${XMSG_PROTOBUF_MIN_VERSION}")
 
-
-option(XMSG_BUILD_TESTS "Build tests" ON)
 
 add_subdirectory(src/core)
 add_subdirectory(src/proto)

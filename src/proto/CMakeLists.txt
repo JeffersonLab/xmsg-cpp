@@ -10,7 +10,7 @@ add_library(xmsgproto OBJECT ${PROTO_SOURCES})
 target_compile_options(xmsgproto PRIVATE -Wno-extra)
 set_target_properties(xmsgproto PROPERTIES
   CXX_CLANG_TIDY ""
-  POSITION_INDEPENDENT_CODE ON)
+  POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
 target_include_directories(xmsgproto SYSTEM PUBLIC
   $<TARGET_PROPERTY:protobuf::libprotobuf,INTERFACE_INCLUDE_DIRECTORIES>
 )
