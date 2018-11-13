@@ -58,7 +58,7 @@ add_subdirectory(doc)
 
 if(XMSG_BUILD_TESTS)
   enable_testing()
-  include(cmake/External/GMock.cmake)
+  include(cmake/External/GTest.cmake)
   add_subdirectory(test/core)
   add_subdirectory(test/perf)
 endif()
