@@ -70,6 +70,10 @@ find_package(Protobuf ${XMSG_PROTOBUF_MIN_VERSION} REQUIRED)
 
 include(EnsureProtobufTarget)
 
+string(CONCAT PKGCONF_REQ_PUB
+  "libzmq >= ${XMSG_ZEROMQ_MIN_VERSION}, "
+  "protobuf >= ${XMSG_PROTOBUF_MIN_VERSION}")
+
 
 option(XMSG_BUILD_TESTS "Build tests" ON)
 
@@ -106,6 +110,18 @@ install(FILES
     ${PROJECT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
     ${PROJECT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
   DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
+
+
+# pkg-config
+configure_file(
+    ${PROJECT_SOURCE_DIR}/cmake/xmsg.pc.in
+    ${PROJECT_BINARY_DIR}/xmsg.pc
+  @ONLY
+)
+
+install(FILES ${PROJECT_BINARY_DIR}/xmsg.pc
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
   COMPONENT Devel)
 
 
