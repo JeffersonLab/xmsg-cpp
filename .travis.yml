@@ -60,4 +60,4 @@ matrix:
 script:
   - ./configure --prefix=${INSTALL_DIR} --build-type=${BUILD_TYPE} &&
     make &&
-    make check
+    make test && make integration_test

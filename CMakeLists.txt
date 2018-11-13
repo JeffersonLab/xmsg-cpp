@@ -1,61 +1,32 @@
-cmake_minimum_required(VERSION 3.1.3)
-project(xMsg C CXX)
+cmake_minimum_required(VERSION 3.5.1)
+project(xMsg LANGUAGES CXX)
 
-if (NOT CMAKE_BUILD_TYPE)
-  message(STATUS "No build type selected, default to RelWithDebInfo")
-  set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "No build type selected, default to Release")
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+    Debug Release MinSizeRel RelWithDebInfo)
 endif()
 
+include(GNUInstallDirs)
 
-if(NOT CMAKE_INSTALL_BINDIR)
-  set(CMAKE_INSTALL_BINDIR "bin" CACHE PATH "user executables (bin)")
-endif()
+option(XMSG_BUILD_TESTS "Build tests" ON)
+option(XMSG_BUILD_SHARED_LIBS "Build shared libs" ON)
 
-if(NOT CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "object code libraries (lib)")
-endif()
+mark_as_advanced(XMSG_BUILD_SHARED_LIBS)
+set(BUILD_SHARED_LIBS ${XMSG_BUILD_SHARED_LIBS})
 
-if(NOT CMAKE_INSTALL_SHAREDIR)
-  set(CMAKE_INSTALL_SHAREDIR "share" CACHE PATH "other files (share)")
-endif()
-
-if(NOT CMAKE_INSTALL_INCLUDEDIR)
-  set(CMAKE_INSTALL_INCLUDEDIR "include" CACHE PATH "header files (include)")
-endif()
-
-if(NOT CMAKE_INSTALL_CONFIGDIR)
-  set(CMAKE_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/xmsg"
-    CACHE PATH "CMake project files (${CMAKE_INSTALL_LIBDIR}/cmake/xmsg")
-endif()
-
-mark_as_advanced(
-  CMAKE_INSTALL_BINDIR
-  CMAKE_INSTALL_LIBDIR
-  CMAKE_INSTALL_SHAREDIR
-  CMAKE_INSTALL_INCLUDEDIR
-  CMAKE_INSTALL_CONFIGDIR
-)
-
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
 endif()
 
-set(GCC_MIN_VERSION 4.9.2)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_MIN_VERSION)
-    message(FATAL_ERROR "Expected GCC >= ${GCC_MIN_VERSION} but found ${CMAKE_CXX_COMPILER_VERSION}")
-  endif()
-endif()
-
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-missing-braces")
+add_compile_options(-Wall -Wextra -Wno-missing-braces)
 
 if(APPLE)
   set(CMAKE_MACOSX_RPATH ON)
@@ -69,46 +40,83 @@ if(APPLE)
 endif()
 
 
-find_package(Protobuf 2.5 REQUIRED)
-find_package(zmq 4.0 REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
+
+set(XMSG_ZEROMQ_MIN_VERSION 4.0)
+set(XMSG_PROTOBUF_MIN_VERSION 2.5)
+
+find_package(ZeroMQ ${XMSG_ZEROMQ_MIN_VERSION} REQUIRED)
+find_package(Protobuf ${XMSG_PROTOBUF_MIN_VERSION} REQUIRED)
+
+include(EnsureProtobufTarget)
+
+string(CONCAT PKGCONF_REQ_PUB
+  "libzmq >= ${XMSG_ZEROMQ_MIN_VERSION}, "
+  "protobuf >= ${XMSG_PROTOBUF_MIN_VERSION}")
 
 
-option(XMSG_BUILD_TESTS "Build tests" ON)
-
-add_subdirectory("src/core")
-add_subdirectory("src/proto")
-add_subdirectory("src/sys")
-add_subdirectory("doc")
+add_subdirectory(src/core)
+add_subdirectory(src/proto)
+add_subdirectory(src/sys)
+add_subdirectory(doc)
 
 if(XMSG_BUILD_TESTS)
   enable_testing()
-  include("cmake/External/GMock.cmake")
-  add_subdirectory("test/core")
-  add_subdirectory("test/perf")
+  include(cmake/External/GTest.cmake)
+  add_subdirectory(test/core)
+  add_subdirectory(test/perf)
 endif()
 
 
-# export targets
+# package configuration
+set(CMAKE_INSTALL_CONFIGDIR "${CMAKE_INSTALL_LIBDIR}/cmake/xmsg")
+
 include(CMakePackageConfigHelpers)
-configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
-  ${PROJECT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/xmsg-config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg-config.cmake
   INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-  PATH_VARS CMAKE_INSTALL_INCLUDEDIR)
+  NO_SET_AND_CHECK_MACRO
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg-config.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/FindZeroMQ.cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/EnsureProtobufTarget.cmake
+  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
+
+
+# export targets
+export(EXPORT xMsgTargets
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/xmsg-targets.cmake
+  NAMESPACE xMsg::
+)
 
 install(EXPORT xMsgTargets
   FILE xmsg-targets.cmake
   NAMESPACE xMsg::
-  DESTINATION ${CMAKE_INSTALL_CONFIGDIR})
+  DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+  COMPONENT Devel)
 
-install(FILES ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/xmsg-config.cmake
-  DESTINATION ${CMAKE_INSTALL_CONFIGDIR} COMPONENT Devel)
+
+# pkg-config
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/xmsg.pc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/xmsg.pc
+  @ONLY
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xmsg.pc
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  COMPONENT Devel)
 
 
 # uninstall target
 configure_file(
-  "${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-  "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+  @ONLY)
 
 add_custom_target(uninstall
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake)
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
