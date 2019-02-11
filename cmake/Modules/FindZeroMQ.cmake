@@ -19,6 +19,8 @@
 find_package(PkgConfig QUIET)
 
 pkg_check_modules(PC_LIBZMQ QUIET libzmq)
+# https://gitlab.kitware.com/cmake/cmake/commit/f5c46dd84ec48cfd1bfe32ed0093a21321e89845
+mark_as_advanced(pkgcfg_lib_PC_LIBZMQ_zmq)
 
 # Look for the header file.
 find_path(ZeroMQ_INCLUDE_DIR NAMES zmq.h HINTS ${PC_LIBZMQ_INCLUDE_DIRS})
