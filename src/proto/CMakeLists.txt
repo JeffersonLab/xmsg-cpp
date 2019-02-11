@@ -4,7 +4,7 @@ set(PROTO_FILES
   registration.proto
 )
 
-PROTOBUF_GENERATE_CPP(PROTO_SOURCES PROTO_HEADERS ${PROTO_FILES})
+protobuf_generate_cpp(PROTO_SOURCES PROTO_HEADERS ${PROTO_FILES})
 
 add_library(xmsgproto OBJECT ${PROTO_SOURCES})
 target_compile_options(xmsgproto PRIVATE -Wno-extra)

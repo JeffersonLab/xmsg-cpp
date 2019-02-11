@@ -2,11 +2,14 @@
 
 set(OLD_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
+
 include(CMakeFindDependencyMacro)
 find_dependency(ZeroMQ @XMSG_ZEROMQ_MIN_VERSION@)
 find_dependency(Protobuf @XMSG_PROTOBUF_MIN_VERSION@)
 include(EnsureProtobufTarget)
+
 set(CMAKE_MODULE_PATH ${OLD_CMAKE_MODULE_PATH})
+unset(OLD_CMAKE_MODULE_PATH)
 
 set(xMsg_CONFIG ${CMAKE_CURRENT_LIST_FILE})
 find_package_handle_standard_args(xMsg CONFIG_MODE)
