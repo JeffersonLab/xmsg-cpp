@@ -2,7 +2,11 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
 
-  set(DOCS_TARGET doc)
+  if(MASTER_PROJECT)
+    set(DOCS_TARGET doc)
+  else()
+    set(DOCS_TARGET xmsg-doc)
+  endif()
 
   add_custom_target(${DOCS_TARGET}
     ${DOXYGEN_EXECUTABLE} Doxyfile

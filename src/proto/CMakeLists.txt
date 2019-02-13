@@ -22,5 +22,8 @@ target_include_directories(xmsgproto SYSTEM INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-install(FILES ${PROTO_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xmsg/proto)
+install(FILES ${PROTO_HEADERS}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xmsg/proto
+  COMPONENT xMsg_Devel
+)
 install(TARGETS xmsgproto EXPORT xMsgTargets)
