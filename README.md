@@ -33,6 +33,11 @@ if they are periodically publishing or subscribed to a given topic,
 and others actors can search the registrar to discover them.
 
 
+## Documentation
+
+The reference documentation is available at <https://claraweb.jlab.org/xmsg/>.
+
+
 ## Build notes
 
 xMsg requires a C++14 compiler (GCC 4.9+) and CMake 3.1+
