@@ -90,10 +90,8 @@ the `<INSTALL_DIR>` prefix should be preferably `$CLARA_HOME`.
 
 ## Authors
 
-For assistance contact authors:
+* Vardan Gyurjyan
+* Sebastián Mancilla
+* Ricardo Oyarzún
 
-* Vardan Gyurjyan    (<gurjyan@jlab.org>)
-* Sebastián Mancilla (<smancill@jlab.org>)
-* Ricardo Oyarzún    (<oyarzun@jlab.org>)
-
-Enjoy...
+For assistance send an email to [clara@jlab.org](mailto:clara@jlab.org).
