@@ -3,6 +3,10 @@
 xMsg is a lightweight, yet full featured publish/subscribe messaging system,
 presenting asynchronous inter-process communication.
 
+[![Build Status](https://travis-ci.org/JeffersonLab/xmsg-cpp.svg?branch=master)](https://travis-ci.org/JeffersonLab/xmsg-cpp)
+[![API reference](https://img.shields.io/badge/doxygen-master-blue.svg?style=flat)](https://claraweb.jlab.org/xmsg/api/cpp/)
+
+
 ## Overview
 
 xMsg actors are required to publish and/or subscribe to messages.
