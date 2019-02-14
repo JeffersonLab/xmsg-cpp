@@ -1,89 +1,48 @@
 # xMsg
 
 xMsg is a lightweight, yet full featured publish/subscribe messaging system,
-presenting asynchronous publish/subscribe inter-process communication
-protocol: an API layer in Java, Python and C++.
+presenting asynchronous inter-process communication.
 
-xMsg provides in memory registration database that is used to register xMsg
-actors (i.e. publishers and subscribers). Hence, xMsg API includes methods for
-registering and discovering publishers and subscribers. This makes xMsg a
-suitable framework to build symmetric SOA based applications. For example a
-services that has a message to publishing can check to see if there are enough
-subscribers of this particular message type.
+[![Build Status](https://travis-ci.org/JeffersonLab/xmsg-cpp.svg?branch=master)](https://travis-ci.org/JeffersonLab/xmsg-cpp)
+[![API reference](https://img.shields.io/badge/doxygen-master-blue.svg?style=flat)](https://claraweb.jlab.org/xmsg/api/cpp/)
 
-To solve dynamic discovery problem in pub/sub environment the need of a proxy
-server is unavoidable. xMsg is using 0MQ socket libraries and borrows 0MQ
-proxy, which is a simple stateless message switch to address mentioned dynamic
-discovery problem.
 
-xMsg stores proxy connection objects internally in a connection pool for
-efficiency reasons. To avoid proxy connection concurrency, thus achieving
-maximum performance, connection objects are not shared between threads. Each
-xMsg actor tread will reuse an available connection object, or create a new
-proxy connection if it is not available in the pool.
+## Overview
 
-xMsg publisher can send a message of any topic. xMsg subscribers subscribe
-to abstract topics and provide callbacks to handle messages as they arrive,
-in a so called subscribe-and-forget mode. Neither publisher nor subscriber
-knows of each others existence. Thus publishers and subscribers are completely
-independent of each others. Yet, for a proper communication they need to
-establish some kind of relationship or binding, and that binding is the
-communication or message topic. Note that multiple xMsg actors can
-communicate without interfering with each other via simple topic
-naming conventions. xMsg topic convention defines three parts: _domain_,
-_subject_, and _type_, presented by the Topic class.
+xMsg actors are required to publish and/or subscribe to messages.
+The messages are identified by topics, and contain metadata
+and user-serialized data.
+xMsg topic convention defines three parts:
+_domain_, _subject_, and _type_.
+The data is identified by the _mime-type_ metadata field,
+which can be used by applications to deserialize the raw bytes
+into its proper data-type object.
 
-xMsg subscriber callbacks will run in a separate thread. For that reason xMsg
-provides a thread pool, simplifying the job of a user. Note that user provided
-callback routines must be thread safe and/or thread enabled.
+Multi-threaded publication of messages is supported,
+with each thread using its own connection to send messages.
+Subscriptions run in a background thread,
+and each received message is processed by a user-defined callback
+executed by a thread-pool.
+Note that the provided callback must be thread-safe.
 
-In a conclusion we present the xMsg entire API
+A proxy must be running in order to pass messages between actors.
+Messages must be published to the same proxy than the subscription,
+or the subscriber will not receive them.
+Long-lived actors can register with a global registrar service
+if they are periodically publishing or subscribed to a given topic,
+and others actors can search the registrar to discover them.
 
-    connect
-    release
-    publish
-    sync_publish
-    subscribe
-    unsubscribe
-    register_as_publisher
-    register_as_subscriber
-    deregister_as_publisher
-    deregister_as_subscriber
-    find_publishers
-    find_subscribers
 
-For more details and API method signatures check the Doxygen documentation.
+## Documentation
+
+The reference documentation is available at <https://claraweb.jlab.org/xmsg/>.
 
 
 ## Build notes
 
-xMsg requires a C++14 compiler (GCC 4.9+) and CMake 3.1+
+xMsg requires a C++14 compiler and CMake 3.5+
 
-#### Ubuntu 14.04
-
-Support PPAs:
-
-    sudo apt-get install software-properties-common
-
-Add a PPA for GCC (do not use GCC 5.x due to ABI changes):
-
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-    sudo apt-get update
-    sudo apt-get install build-essential gcc-4.9 g++-4.9
-
-Set GCC 4.9 as default:
-
-    sudo update-alternatives \
-            --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 \
-            --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
-
-Add a PPA for CMake:
-
-    sudo add-apt-repository ppa:george-edison55/cmake-3.x
-    sudo apt-get update
-    sudo apt-get install cmake
-
-#### Ubuntu 16.04
+#### Ubuntu 16.04 and 18.04
 
 Install GCC and CMake from the repositories:
 
@@ -104,13 +63,13 @@ Install CMake using [Homebrew](http://brew.sh/):
 xMsg uses [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/downloads)
 and [ZeroMQ](http://zeromq.org/area:download).
 
-#### Ubuntu 14.04 and 16.04
+#### Ubuntu 16.04 and 18.04
 
 Install from the repositories:
 
     sudo apt-get install libzmq3-dev libprotobuf-dev protobuf-compiler
 
-#### Mac OS X 10.9 and newer
+#### macOS
 
 Use Homebrew:
 
@@ -125,13 +84,14 @@ To build with CMake a configure wrapper script is provided:
     make
     make install
 
+When installing as a dependency for [CLARA](https://github.com/JeffersonLab/clara-cpp),
+the `<INSTALL_DIR>` prefix should be preferably `$CLARA_HOME`.
+
 
 ## Authors
 
-For assistance contact authors:
+* Vardan Gyurjyan
+* Sebastián Mancilla
+* Ricardo Oyarzún
 
-* Vardan Gyurjyan    (<gurjyan@jlab.org>)
-* Sebastián Mancilla (<smancill@jlab.org>)
-* Ricardo Oyarzún    (<oyarzun@jlab.org>)
-
-Enjoy...
+For assistance send an email to [clara@jlab.org](mailto:clara@jlab.org).
