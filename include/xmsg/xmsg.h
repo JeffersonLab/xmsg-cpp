@@ -1,5 +1,3 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
-/* vim: set ts=8 sts=4 et sw=4 tw=80: */
 /*
  * Copyright (C) 2015. Jefferson Lab, xMsg framework (JLAB). All Rights Reserved.
  * Permission to use, copy, modify, and distribute this software and its
