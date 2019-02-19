@@ -13,7 +13,14 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     Debug Release MinSizeRel RelWithDebInfo)
 endif()
 
-option(XMSG_BUILD_TESTS "Build tests" ${MASTER_PROJECT})
+if(NOT ${CMAKE_VERSION} VERSION_LESS 3.11 OR FETCHCONTENT_SOURCE_DIR_XMSG)
+  option(XMSG_BUILD_TESTS "Build tests" ${MASTER_PROJECT})
+elseif(NOT XMSG_TESTS_DISABLED OR XMSG_BUILD_TESTS)
+  message(STATUS "Tests are disabled (CMake >= 3.11 required)")
+  set(XMSG_TESTS_DISABLED ON CACHE INTERNAL "" FORCE)
+  set(XMSG_BUILD_TESTS OFF)
+endif()
+
 option(XMSG_BUILD_DOCS "Build docs" ${MASTER_PROJECT})
 
 if(NOT DEFINED BUILD_SHARED_LIBS)
@@ -64,6 +71,12 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
+if(NOT ${CMAKE_VERSION} VERSION_LESS 3.11)
+  set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/ThirdParty" CACHE PATH
+    "Directory under which to collect all populated content")
+  include(FetchContent)
+endif()
+
 set(XMSG_ZEROMQ_MIN_VERSION 4.0)
 set(XMSG_PROTOBUF_MIN_VERSION 2.5)
 
@@ -87,7 +100,7 @@ endif()
 
 if(XMSG_BUILD_TESTS)
   enable_testing()
-  include(cmake/External/GTest.cmake)
+  add_subdirectory(test/third_party)
   add_subdirectory(test/core)
   add_subdirectory(test/perf)
 endif()
