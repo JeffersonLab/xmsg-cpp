@@ -9,10 +9,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(XMSG_BUILD_TESTS "Build tests" ON)
-option(XMSG_BUILD_SHARED_LIBS "Build shared libs" ON)
 
-mark_as_advanced(XMSG_BUILD_SHARED_LIBS)
-set(BUILD_SHARED_LIBS ${XMSG_BUILD_SHARED_LIBS})
+if(NOT DEFINED BUILD_SHARED_LIBS)
+  set(BUILD_SHARED_LIBS ON)
+endif()
 
 include(GNUInstallDirs)
 

@@ -8,9 +8,10 @@ protobuf_generate_cpp(PROTO_SOURCES PROTO_HEADERS ${PROTO_FILES})
 
 add_library(xmsgproto_obj OBJECT ${PROTO_SOURCES})
 target_compile_options(xmsgproto_obj PRIVATE -Wno-extra)
-set_target_properties(xmsgproto_obj PROPERTIES
-  CXX_CLANG_TIDY ""
-  POSITION_INDEPENDENT_CODE ${BUILD_SHARED_LIBS})
+set_target_properties(xmsgproto_obj PROPERTIES CXX_CLANG_TIDY "")
+if(BUILD_SHARED_LIBS)
+  set_target_properties(xmsgproto_obj PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 target_include_directories(xmsgproto_obj SYSTEM PUBLIC
   $<TARGET_PROPERTY:xmsgproto,INTERFACE_INCLUDE_DIRECTORIES>
 )
