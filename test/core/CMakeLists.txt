@@ -1,4 +1,10 @@
 #----------------------------------------------------------------------
+# General settings
+#
+unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+
+
+#----------------------------------------------------------------------
 # Public interface tests
 #
 set(XMSG_PUBLIC_TESTS
