@@ -13,22 +13,23 @@ set(XMSG_FILES
   zhelper.cpp
 )
 
-add_library(xmsg ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto>)
-target_link_libraries(xmsg xmsgproto_headers ZeroMQ::libzmq)
+add_library(xmsg ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto_obj>)
+target_link_libraries(xmsg xmsgproto ZeroMQ::libzmq)
 target_include_directories(xmsg PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_include_directories(xmsg SYSTEM PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/third_party>)
 
-add_library(xMsg::xMsg ALIAS xmsg)
+add_library(xMsg::xmsg ALIAS xmsg)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/xmsg/
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xmsg
-  COMPONENT Devel
+  COMPONENT xMsg_Devel
 )
 install(TARGETS xmsg EXPORT xMsgTargets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  COMPONENT xMsg_Runtime
 )

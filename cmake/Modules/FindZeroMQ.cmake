@@ -19,6 +19,8 @@
 find_package(PkgConfig QUIET)
 
 pkg_check_modules(PC_LIBZMQ QUIET libzmq)
+# https://gitlab.kitware.com/cmake/cmake/commit/f5c46dd84ec48cfd1bfe32ed0093a21321e89845
+mark_as_advanced(pkgcfg_lib_PC_LIBZMQ_zmq)
 
 # Look for the header file.
 find_path(ZeroMQ_INCLUDE_DIR NAMES zmq.h HINTS ${PC_LIBZMQ_INCLUDE_DIRS})
@@ -26,7 +28,7 @@ find_path(ZeroMQ_INCLUDE_DIR NAMES zmq.h HINTS ${PC_LIBZMQ_INCLUDE_DIRS})
 # Look for the library.
 find_library(ZeroMQ_LIBRARY NAMES zmq libzmq HINTS ${PC_LIBZMQ_LIBRARY_DIRS})
 
-if(ZeroMQ_INCLUDE_DIR AND EXISTS "${ZeroMQ_INCLUDE_DIR}/zmq.h" )
+if(ZeroMQ_INCLUDE_DIR AND EXISTS "${ZeroMQ_INCLUDE_DIR}/zmq.h")
   file(READ "${ZeroMQ_INCLUDE_DIR}/zmq.h" _ZMQ_VERSION_H_CONTENTS)
   string(REGEX MATCH "#define ZMQ_VERSION_MAJOR ([0-9])" _MATCH "${_ZMQ_VERSION_H_CONTENTS}")
   set(ZeroMQ_VERSION_MAJOR ${CMAKE_MATCH_1})
