@@ -12,7 +12,7 @@ foreach(name IN LISTS XMSG_PUBLIC_TESTS)
   add_executable(test_${name} ${name}_test.cpp)
   add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS $<CONFIG> "")
   set_tests_properties(test_${name} PROPERTIES LABELS "unit;public")
-  target_link_libraries(test_${name} PRIVATE xMsg::xMsg GTest::GMock)
+  target_link_libraries(test_${name} PRIVATE xMsg::xmsg GTest::GMock)
 endforeach()
 
 
@@ -30,7 +30,7 @@ foreach(name IN LISTS XMSG_INTERNAL_TESTS)
   add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS $<CONFIG> "")
   set_tests_properties(test_${name} PROPERTIES LABELS "unit;private")
   target_include_directories(test_${name} PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
-  target_link_libraries(test_${name} PRIVATE xMsg::xMsg GTest::GMock)
+  target_link_libraries(test_${name} PRIVATE xMsg::xmsg GTest::GMock)
 endforeach()
 
 
@@ -45,7 +45,7 @@ foreach(name IN LISTS XMSG_INTEGRATION_TESTS)
   add_executable(test_${name} ${name}_test.cpp)
   add_test(NAME test_${name} COMMAND test_${name} CONFIGURATIONS Integration)
   set_tests_properties(test_${name} PROPERTIES LABELS "integration;slow" RUN_SERIAL TRUE)
-  target_link_libraries(test_${name} PRIVATE xMsg::xMsg GTest::GMock)
+  target_link_libraries(test_${name} PRIVATE xMsg::xmsg GTest::GMock)
 endforeach()
 
 add_custom_target(integration_test
@@ -56,5 +56,5 @@ add_custom_target(integration_test
 # Standalone executable tests
 #
 add_executable(test_registration registrar_test.cpp)
-target_link_libraries(test_registration PRIVATE xMsg::xMsg)
+target_link_libraries(test_registration PRIVATE xMsg::xmsg)
 target_include_directories(test_registration PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
