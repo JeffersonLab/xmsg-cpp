@@ -13,8 +13,8 @@ set(XMSG_FILES
   zhelper.cpp
 )
 
-add_library(xmsg ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto>)
-target_link_libraries(xmsg xmsgproto_headers ZeroMQ::libzmq)
+add_library(xmsg ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto_obj>)
+target_link_libraries(xmsg xmsgproto ZeroMQ::libzmq)
 target_include_directories(xmsg PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
