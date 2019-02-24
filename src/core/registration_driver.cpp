@@ -179,7 +179,7 @@ ResponseMsg Response::msg()
 
 
 RegDriver::RegDriver(Context& ctx, RegAddress addr)
-  : addr_{addr}
+  : addr_{std::move(addr)}
   , socket_{ctx.create_socket(zmq::socket_type::req)}
 {
     socket_.setsockopt(ZMQ_RCVHWM, 0);

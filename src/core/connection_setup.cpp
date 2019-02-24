@@ -31,7 +31,7 @@ void SocketSetup::set_option(int opt, const void* val, size_t val_len)
 {
     int rc = zmq_setsockopt(socket_, opt, val, val_len);
     if (rc != 0) {
-        throw new std::runtime_error{zmq_strerror(errno)};
+        throw std::runtime_error{zmq_strerror(errno)};
     }
 }
 
@@ -40,7 +40,7 @@ void SocketSetup::get_option(int opt, void* val, size_t* val_len) const
 {
     int rc = zmq_getsockopt(socket_, opt, val, val_len);
     if (rc != 0) {
-        throw new std::runtime_error{zmq_strerror(errno)};
+        throw std::runtime_error{zmq_strerror(errno)};
     }
 }
 

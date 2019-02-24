@@ -5,7 +5,7 @@
 using namespace testing;
 using namespace xmsg;
 
-using TopicQuery = std::string (Topic::*)(void) const;
+using TopicQuery = std::string (Topic::*)() const;
 
 
 template<typename S>

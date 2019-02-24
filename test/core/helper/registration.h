@@ -78,9 +78,9 @@ const std::string& random(const DataArray& data)
 
 proto::Registration random_registration()
 {
-    auto name = random(names);
-    auto host = random(hosts);
-    auto topic = random(topics);
+    const auto& name = random(names);
+    const auto& host = random(hosts);
+    const auto& topic = random(topics);
     auto is_publisher = bdist(rng);
     return new_registration(name, host, topic, is_publisher);
 }
