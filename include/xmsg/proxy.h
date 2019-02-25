@@ -37,13 +37,10 @@ public:
     Proxy(std::unique_ptr<Context>&& ctx, const ProxyAddress& addr);
     explicit Proxy(const ProxyAddress& addr);
 
-    ~Proxy();
-
     Proxy(const Proxy&) = delete;
     Proxy& operator=(const Proxy&) = delete;
 
-    Proxy(Proxy&&) = delete;
-    Proxy& operator=(Proxy&&) = delete;
+    ~Proxy();
 
 public:
     void start();

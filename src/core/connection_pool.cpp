@@ -104,8 +104,8 @@ ConnectionPool::ConnectionPool(std::unique_ptr<Context>&& ctx)
 { }
 
 
-ConnectionPool::ConnectionPool(ConnectionPool&&) = default;
-ConnectionPool& ConnectionPool::operator=(ConnectionPool&&) = default;
+ConnectionPool::ConnectionPool(ConnectionPool&&) noexcept = default;
+ConnectionPool& ConnectionPool::operator=(ConnectionPool&&) noexcept = default;
 
 ConnectionPool::~ConnectionPool() = default;
 

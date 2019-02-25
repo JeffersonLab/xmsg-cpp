@@ -48,9 +48,6 @@ public:
     Subscription(const Subscription&) = delete;
     Subscription& operator=(const Subscription&) = delete;
 
-    Subscription(Subscription&&) = delete;
-    Subscription& operator=(Subscription&&) = delete;
-
     ~Subscription();
 
 private:

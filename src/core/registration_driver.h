@@ -109,8 +109,16 @@ class RegDriver
 {
 public:
     RegDriver(Context& ctx, RegAddress addr);
+
+    RegDriver(const RegDriver&) = delete;
+    RegDriver& operator=(const RegDriver&) = delete;
+
+    RegDriver(RegDriver&&) noexcept = default;
+    RegDriver& operator=(RegDriver&&) noexcept = default;
+
     virtual ~RegDriver() = default;
 
+public:
     void add(const proto::Registration& data, bool is_publisher);
 
     void remove(const proto::Registration& data, bool is_publisher);

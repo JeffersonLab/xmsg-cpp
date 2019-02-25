@@ -40,8 +40,8 @@ public:
     ConnectionPool(const ConnectionPool&) = delete;
     ConnectionPool& operator=(const ConnectionPool&) = delete;
 
-    ConnectionPool(ConnectionPool&& rhs);
-    ConnectionPool& operator=(ConnectionPool&& rhs);
+    ConnectionPool(ConnectionPool&& rhs) noexcept;
+    ConnectionPool& operator=(ConnectionPool&& rhs) noexcept;
 
     virtual ~ConnectionPool();
 

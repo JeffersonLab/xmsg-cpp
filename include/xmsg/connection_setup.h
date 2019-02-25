@@ -42,6 +42,11 @@ public:
     SocketSetup(const SocketSetup& rhs) = delete;
     SocketSetup& operator=(const SocketSetup& rhs) = delete;
 
+    SocketSetup(SocketSetup&&) noexcept = default;
+    SocketSetup& operator=(SocketSetup&&) noexcept = default;
+
+    ~SocketSetup() = default;
+
 public:
     /// Sets the value of a ØMQ socket option
     void set_option(int opt, const void* val, size_t val_len);
@@ -85,6 +90,11 @@ private:
 class ConnectionSetup
 {
 public:
+    ConnectionSetup() = default;
+
+    ConnectionSetup(const ConnectionSetup&) = delete;
+    ConnectionSetup& operator=(const ConnectionSetup&) = delete;
+
     virtual ~ConnectionSetup() = default;
 
     /**
