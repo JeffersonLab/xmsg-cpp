@@ -34,8 +34,8 @@ class ConnectionPool
 {
 public:
     ConnectionPool();
-    ConnectionPool(std::shared_ptr<Context> ctx);
-    ConnectionPool(std::unique_ptr<Context>&& ctx);
+    explicit ConnectionPool(std::shared_ptr<Context> ctx);
+    explicit ConnectionPool(std::unique_ptr<Context>&& ctx);
 
     ConnectionPool(const ConnectionPool&) = delete;
     ConnectionPool& operator=(const ConnectionPool&) = delete;

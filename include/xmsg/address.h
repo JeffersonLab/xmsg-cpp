@@ -42,7 +42,7 @@ public:
     ProxyAddress();
 
     /// Creates an address using provided host and default ports
-    ProxyAddress(const std::string& host);
+    explicit ProxyAddress(const std::string& host);
 
     /// Creates an address using provided host and PUB port,
     /// with default SUB port
@@ -80,7 +80,7 @@ public:
     RegAddress();
 
     /// Creates an address using provided host and default port
-    RegAddress(const std::string& host);
+    explicit RegAddress(const std::string& host);
 
     /// Creates an address using provided host and port
     RegAddress(const std::string& host, int port);

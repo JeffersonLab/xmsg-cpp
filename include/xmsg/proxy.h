@@ -35,7 +35,7 @@ class Proxy final
 {
 public:
     Proxy(std::unique_ptr<Context>&& ctx, const ProxyAddress& addr);
-    Proxy(const ProxyAddress& addr);
+    explicit Proxy(const ProxyAddress& addr);
 
     ~Proxy();
 

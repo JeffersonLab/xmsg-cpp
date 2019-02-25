@@ -71,7 +71,7 @@ private:
 class BasicPoller final
 {
 public:
-    BasicPoller(zmq::socket_t& socket)
+    explicit BasicPoller(zmq::socket_t& socket)
       : items_{{static_cast<void*>(socket), 0, ZMQ_POLLIN, 0}}
     { }
 

@@ -53,7 +53,7 @@ public:
             std::string sender,
             std::string text);
 
-    Request(const RequestMsg& msg);
+    explicit Request(const RequestMsg& msg);
 
     RequestMsg msg();
 
@@ -81,7 +81,7 @@ public:
 
     Response(std::string topic, std::string sender, std::string error_msg);
 
-    Response(const ResponseMsg& msg);
+    explicit Response(const ResponseMsg& msg);
 
     ResponseMsg msg();
 

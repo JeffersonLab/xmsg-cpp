@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
     try {
         auto subscriber = xmsg::xMsg("thr_subscriber");
-        auto connection = subscriber.connect(bind_to);
+        auto connection = subscriber.connect(xmsg::ProxyAddress{bind_to});
         auto topic = xmsg::Topic::raw("thr_topic");
         auto cb = LocalCallback{};
 

@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 
     try {
         auto publisher = xmsg::xMsg("thr_publisher");
-        auto connection = publisher.connect(bind_to);
+        auto connection = publisher.connect(xmsg::ProxyAddress{bind_to});
 
         auto topic = xmsg::Topic::raw("thr_topic");
         auto data = std::vector<std::uint8_t>(message_size);
