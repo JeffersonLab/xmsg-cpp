@@ -96,14 +96,6 @@ ConnectionPool::ConnectionPool(std::shared_ptr<Context> ctx)
 { }
 
 
-ConnectionPool::ConnectionPool(std::unique_ptr<Context>&& ctx)
-  : ctx_{std::move(ctx)}
-  , setup_{std::make_shared<ConnectionSetup>()}
-  , proxy_cache_{std::make_unique<ProxyDriverCache>()}
-  , reg_cache_{std::make_unique<RegDriverCache>()}
-{ }
-
-
 ConnectionPool::ConnectionPool(ConnectionPool&&) noexcept = default;
 ConnectionPool& ConnectionPool::operator=(ConnectionPool&&) noexcept = default;
 
@@ -123,7 +115,7 @@ ProxyConnection ConnectionPool::get_connection(const ProxyAddress& addr)
 }
 
 
-void ConnectionPool::set_default_setup(std::unique_ptr<ConnectionSetup>&& setup)
+void ConnectionPool::set_default_setup(std::unique_ptr<ConnectionSetup> setup)
 {
     setup_ = std::move(setup);
 }

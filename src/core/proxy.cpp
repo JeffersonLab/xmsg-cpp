@@ -37,7 +37,7 @@ std::mutex mtx;
 namespace xmsg {
 namespace sys {
 
-Proxy::Proxy(std::unique_ptr<Context>&& ctx, const ProxyAddress& addr)
+Proxy::Proxy(std::unique_ptr<Context> ctx, const ProxyAddress& addr)
   : ctx_{std::move(ctx)}
   , addr_{addr}
   , is_alive_{false}
