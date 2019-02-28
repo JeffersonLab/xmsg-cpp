@@ -46,43 +46,42 @@ xMsg requires a C++14 compiler and CMake 3.5+
 
 Install GCC and CMake from the repositories:
 
-    sudo apt-get install build-essential cmake
+    $ sudo apt install build-essential cmake
 
 #### Mac OS X 10.9 and newer
 
 Install Xcode command line tools:
 
-    xcode-select --install
+    $ xcode-select --install
 
-Install CMake using [Homebrew](http://brew.sh/):
+Install CMake using [Homebrew](https://brew.sh/):
 
-    brew install cmake
+    $ brew install cmake
 
 ### Dependencies
 
 xMsg uses [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/downloads)
-and [ZeroMQ](http://zeromq.org/area:download).
+and [ZeroMQ](http://zeromq.org/intro:get-the-software).
 
 #### Ubuntu 16.04 and 18.04
 
 Install from the repositories:
 
-    sudo apt-get install libzmq3-dev libprotobuf-dev protobuf-compiler
+    $ sudo apt install libzmq3-dev libprotobuf-dev protobuf-compiler
 
 #### macOS
 
 Use Homebrew:
 
-    brew update
-    brew install zeromq protobuf
+    $ brew install zeromq protobuf
 
 ### Installation
 
 To build with CMake a configure wrapper script is provided:
 
-    ./configure --prefix=<INSTALL_DIR>
-    make
-    make install
+    $ ./configure --prefix=<INSTALL_DIR>
+    $ make
+    $ make install
 
 When installing as a dependency for [CLARA](https://github.com/JeffersonLab/clara-cpp),
 the `<INSTALL_DIR>` prefix should be preferably `$CLARA_HOME`.
