@@ -212,7 +212,7 @@ TEST(Message, CreateMoveResponse)
     ASSERT_THAT(res_msg.data(), ContainerEq(data));
     ASSERT_THAT(res_msg.datatype(), StrEq("test/binary"));
 
-    ASSERT_THAT(msg.topic().str(), StrEq(""));
+    ASSERT_THAT(msg.topic().str(), StrEq(""));  // NOLINT
     ASSERT_THAT(msg.meta(), Eq(nullptr));
     ASSERT_THAT(msg.data(), IsEmpty());
 }

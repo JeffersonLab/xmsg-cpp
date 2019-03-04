@@ -11,7 +11,7 @@
 #include <utility>
 
 #include <pthread.h>
-#include <stdio.h>
+#include <cstdio>
 
 namespace xmsg {
 namespace detail {

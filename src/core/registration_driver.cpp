@@ -179,7 +179,7 @@ ResponseMsg Response::msg()
 
 
 RegDriver::RegDriver(Context& ctx, RegAddress addr)
-  : addr_{addr}
+  : addr_{std::move(addr)}
   , socket_{ctx.create_socket(zmq::socket_type::req)}
 {
     socket_.setsockopt(ZMQ_RCVHWM, 0);
@@ -241,7 +241,7 @@ Response RegDriver::request(Request& req, int timeout)
                 break;
             }
         }
-        return { in_msg };
+        return Response{in_msg};
     }
     throw std::runtime_error{"timeout"};
 }

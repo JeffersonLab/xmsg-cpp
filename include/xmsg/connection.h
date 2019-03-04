@@ -74,8 +74,8 @@ public:
     ScopedConnection(const ScopedConnection&) = delete;
     ScopedConnection& operator=(const ScopedConnection&) = delete;
 
-    ScopedConnection(ScopedConnection&&) = default;
-    ScopedConnection& operator=(ScopedConnection&&) = default;
+    ScopedConnection(ScopedConnection&&) noexcept(std::is_nothrow_move_constructible<deleter>::value) = default;
+    ScopedConnection& operator=(ScopedConnection&&) noexcept(std::is_nothrow_move_constructible<deleter>::value) = default;
 
     ~ScopedConnection()
     {

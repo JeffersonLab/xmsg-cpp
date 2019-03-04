@@ -136,8 +136,8 @@ public:
     xMsg(const xMsg& rhs) = delete;
     xMsg& operator=(const xMsg& rhs) = delete;
 
-    xMsg(xMsg&& rhs);
-    xMsg& operator=(xMsg&& rhs);
+    xMsg(xMsg&& rhs) noexcept;
+    xMsg& operator=(xMsg&& rhs) noexcept;
 
     virtual ~xMsg();
 

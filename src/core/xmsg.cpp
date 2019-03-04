@@ -87,6 +87,9 @@ public:
         util::sleep(10);
     }
 
+    ScopedSubscription(const ScopedSubscription&) = delete;
+    ScopedSubscription& operator=(const ScopedSubscription&) = delete;
+
     ~ScopedSubscription()
     {
         connection_.unsubscribe(topic_);
@@ -123,8 +126,8 @@ xMsg::xMsg(const std::string& name,
 { }
 
 
-xMsg::xMsg(xMsg &&) = default;
-xMsg& xMsg::operator=(xMsg &&) = default;
+xMsg::xMsg(xMsg &&) noexcept = default;
+xMsg& xMsg::operator=(xMsg &&) noexcept = default;
 
 xMsg::~xMsg() = default;
 
@@ -160,7 +163,7 @@ Message xMsg::sync_publish(ProxyConnection& connection,
     auto return_addr = detail::get_unique_replyto(xmsg_->id);
     msg.meta_->set_replyto(return_addr);
 
-    auto sub = ScopedSubscription{*connection, Topic::raw(return_addr)};
+    ScopedSubscription sub{*connection, Topic::raw(return_addr)};
     connection->send(msg);
 
     const auto dt = 10;

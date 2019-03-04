@@ -80,7 +80,7 @@ char* get_option(char** begin, char** end, const std::string& option)
     if (itr != end && ++itr != end) {
         return *itr;
     }
-    return 0;
+    return nullptr;
 }
 
 

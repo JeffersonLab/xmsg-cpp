@@ -34,14 +34,13 @@ class ConnectionPool
 {
 public:
     ConnectionPool();
-    ConnectionPool(std::shared_ptr<Context> ctx);
-    ConnectionPool(std::unique_ptr<Context>&& ctx);
+    explicit ConnectionPool(std::shared_ptr<Context> ctx);
 
     ConnectionPool(const ConnectionPool&) = delete;
     ConnectionPool& operator=(const ConnectionPool&) = delete;
 
-    ConnectionPool(ConnectionPool&& rhs);
-    ConnectionPool& operator=(ConnectionPool&& rhs);
+    ConnectionPool(ConnectionPool&& rhs) noexcept;
+    ConnectionPool& operator=(ConnectionPool&& rhs) noexcept;
 
     virtual ~ConnectionPool();
 
@@ -51,7 +50,7 @@ public:
     RegConnection get_connection(const RegAddress& addr);
 
 public:
-    void set_default_setup(std::unique_ptr<ConnectionSetup>&& setup);
+    void set_default_setup(std::unique_ptr<ConnectionSetup> setup);
 
 private:
     virtual detail::ProxyDriverPtr create_connection(const ProxyAddress& addr);

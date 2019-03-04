@@ -43,7 +43,7 @@ public:
 
     void set_option(int opt, int val)
     {
-        int rc = zmq_ctx_set((void*) ctx_, opt, val);
+        int rc = zmq_ctx_set(static_cast<void*>(ctx_), opt, val);
         if (rc < 0) {
             throw zmq::error_t{};
         }
@@ -51,7 +51,7 @@ public:
 
     int get_option(int opt)
     {
-        int rc = zmq_ctx_get((void*) ctx_, opt);
+        int rc = zmq_ctx_get(static_cast<void*>(ctx_), opt);
         if (rc < 0) {
             throw zmq::error_t{};
         }
@@ -71,8 +71,8 @@ private:
 class BasicPoller final
 {
 public:
-    BasicPoller(zmq::socket_t& socket)
-      : items_{{(void*) socket, 0, ZMQ_POLLIN, 0}}
+    explicit BasicPoller(zmq::socket_t& socket)
+      : items_{{static_cast<void*>(socket), 0, ZMQ_POLLIN, 0}}
     { }
 
     bool poll(int timeout)
