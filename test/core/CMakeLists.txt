@@ -3,6 +3,10 @@
 #
 unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
+if(ENABLE_THREAD_SANITIZER)
+  add_compile_definitions(THREAD_SANITIZER)
+endif()
+
 
 #----------------------------------------------------------------------
 # Public interface tests
