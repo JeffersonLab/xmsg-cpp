@@ -23,6 +23,7 @@
 
 #include <chrono>
 #include <regex>
+#include <shared_mutex>
 #include <system_error>
 #include <thread>
 
@@ -32,8 +33,6 @@
 
 
 namespace {
-
-std::vector<std::string> localhost_addrs;
 
 // clang-format off
 const auto ip_regex = std::regex{"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
@@ -82,6 +81,41 @@ std::string get_host_address(const std::string& hostname)
     return { inet_ntoa(*((struct in_addr*) h->h_addr)) };
 }
 
+
+class LocalAddrs
+{
+public:
+    void update_addrs()
+    {
+        auto updated = get_addresses();
+        std::lock_guard<std::shared_timed_mutex> lk{mtx_};
+        std::swap(addr_, updated);
+    }
+
+    std::string get_first()
+    {
+        std::shared_lock<std::shared_timed_mutex> lk{mtx_};
+        return addr_[0];
+    }
+
+    std::vector<std::string> get_addrs()
+    {
+        std::shared_lock<std::shared_timed_mutex> lk{mtx_};
+        return addr_;
+    }
+
+private:
+    std::shared_timed_mutex mtx_;
+    std::vector<std::string> addr_ = get_addresses();
+};
+
+
+LocalAddrs& local_addrs()
+{
+    static auto* addrs = new LocalAddrs{};
+    return *addrs;
+}
+
 }
 
 
@@ -91,23 +125,19 @@ namespace util {
 
 std::string localhost()
 {
-    return to_host_addr("localhost");
+    return local_addrs().get_first();
 }
 
 
-const std::vector<std::string>& get_localhost_addrs()
+std::vector<std::string> get_localhost_addrs()
 {
-    if (localhost_addrs.empty()) {
-        update_localhost_addrs();
-    }
-    return localhost_addrs;
+    return local_addrs().get_addrs();
 }
 
 
 void update_localhost_addrs()
 {
-    auto tmp_addrs = get_addresses();
-    std::swap(tmp_addrs, localhost_addrs);
+    local_addrs().update_addrs();
 }
 
 
@@ -117,7 +147,7 @@ std::string to_host_addr(const std::string& hostname)
         return { hostname };
     }
     if (hostname == "localhost") {
-        return get_localhost_addrs()[0];
+        return local_addrs().get_first();
     }
     return get_host_address(hostname);
 }
