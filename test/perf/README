@@ -3,17 +3,17 @@ on several terminals:
 
 1. Start an xMsg node:
 
-    $ ./build/src/sys/cx_proxy
+    $ ./build/bin/cx_proxy
 
 2. Start the subscriber. Pass the message size and the expected number of
    messages:
 
-   $ ./build/test/perf/local_thr localhost 50000 100000
+   $ ./build/bin/local_thr localhost 50000 100000
 
 2. Start the publisher. Pass the message size and the number of
    messages to be sent:
 
-   $ ./build/test/perf/remote_thr localhost 50000 100000
+   $ ./build/bin/remote_thr localhost 50000 100000
 
 Once all the messages have been received, the subscriber will print the
 performance and throughput results:
