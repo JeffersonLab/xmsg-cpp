@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <thread>
+#include <vector>
 
 using namespace testing;
 using namespace xmsg;
@@ -107,6 +108,26 @@ TEST(RandomControlId, RamdomLastFiveDigits)
     ASSERT_NE(suff1, suff3);
     ASSERT_NE(suff2, suff3);
 }
+
+
+#if THREAD_SANITIZER
+TEST(RandomControlId, ThreadSafeGeneration)
+{
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < 8; ++i) {
+        threads.emplace_back([]() {
+            for (int i = 0; i < 25; i++) {
+                detail::get_random_id();
+            }
+        });
+    }
+
+    for (auto& t: threads) {
+        t.join();
+    }
+}
+#endif
 
 
 int main(int argc, char* argv[])
