@@ -58,6 +58,8 @@ foreach(name IN LISTS XMSG_INTEGRATION_TESTS)
   target_link_libraries(test_${name} PRIVATE xMsg::xmsg GTest::GMock)
 endforeach()
 
+set_tests_properties(test_subscription PROPERTIES TIMEOUT 25)
+
 add_custom_target(integration_test
   COMMAND ${CMAKE_CTEST_COMMAND} -C Integration)
 
