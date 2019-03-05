@@ -16,7 +16,7 @@ AssertionResult is_ip(const std::string& address)
 }
 
 
-TEST(ip_utils, check_valid_ips)
+TEST(IpUtils, CheckValidIPs)
 {
     std::string addrs[] = {
         "1.1.1.1",
@@ -34,7 +34,7 @@ TEST(ip_utils, check_valid_ips)
 }
 
 
-TEST(ip_utils, check_invalid_ips)
+TEST(IpUtils, CheckInvalidIPs)
 {
     std::string addrs[] = {
         "10.10.10",
@@ -55,7 +55,7 @@ TEST(ip_utils, check_invalid_ips)
 }
 
 
-TEST(ip_utils, check_only_ip_v4)
+TEST(IpUtils, CheckOnlyIPv4)
 {
     std::string addrs[] = {
         "2001:cdba:0000:0000:0000:0000:3257:9652",

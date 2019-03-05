@@ -87,7 +87,7 @@ TEST(Subscription, SuscribeReceivesAllMessages)
 }
 
 
-TEST(Subscription, syncPublishReceivesAllResponses)
+TEST(Subscription, SyncPublishReceivesAllResponses)
 {
     struct Check
     {
