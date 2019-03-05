@@ -68,3 +68,6 @@ add_custom_target(integration_test
 add_executable(test_registration registrar_test.cpp)
 target_link_libraries(test_registration PRIVATE xMsg::xmsg)
 target_include_directories(test_registration PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
+
+add_executable(test_addr_resolution addr_resolution_test.cpp)
+target_link_libraries(test_addr_resolution PRIVATE xMsg::xmsg)
