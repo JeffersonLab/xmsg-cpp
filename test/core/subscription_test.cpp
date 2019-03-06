@@ -2,6 +2,7 @@
 #include <xmsg/xmsg.h>
 
 #include "helper/proxy_wrapper.h"
+#include "helper/utils.h"
 
 #include <gmock/gmock.h>
 
@@ -31,13 +32,15 @@ TEST(Subscription, SuscribeReceivesAllMessages)
     {
         std::atomic_int counter{0};
         std::atomic_long sum{0};
-        std::atomic_bool ready{false};
 
         const int N = 10000;
         const long SUM_N = 49995000L;
     } check;
 
-    xmsg::test::ProxyThread proxy_thread{};
+    xmsg::test::ProxyThread proxy_thread;
+
+    SimpleCondition sub_ready;
+    SimpleCondition all_msg;
 
     auto sub_thread = std::thread{[&]() {
         try {
@@ -47,26 +50,26 @@ TEST(Subscription, SuscribeReceivesAllMessages)
             auto topic = xmsg::Topic::raw("test_topic");
             auto cb = [&](xmsg::Message& msg) {
                 auto i = xmsg::parse_message<int>(msg);
-                check.counter.fetch_add(1);
+                auto n = check.counter.fetch_add(1);
                 check.sum.fetch_add(i);
+                if (++n == check.N) {
+                    all_msg.notify_one();
+                }
             };
 
             auto sub = actor.subscribe(topic, std::move(connection), cb);
-            check.ready = true;
-            while (check.counter.load() < check.N) {
-                xmsg::util::sleep(10);
-            }
+            sub_ready.notify_one();
+
+            all_msg.wait_for(4000);
             actor.unsubscribe(std::move(sub));
         } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "Subscriber error: " << e.what() << std::endl;
         }
     }};
 
     auto pub_thread = std::thread{[&]() {
         try {
-            while (!check.ready.load()) {
-                xmsg::util::sleep(10);
-            }
+            sub_ready.wait_for(1000);
             auto actor = xmsg::xMsg{"test_publisher"};
             auto connection = actor.connect();
             auto topic = xmsg::Topic::raw("test_topic");
@@ -75,12 +78,12 @@ TEST(Subscription, SuscribeReceivesAllMessages)
                 actor.publish(connection, msg);
             }
         } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "Publisher error: " << e.what() << std::endl;
         }
     }};
 
-    sub_thread.join();
     pub_thread.join();
+    sub_thread.join();
 
     ASSERT_THAT(check.counter.load(), Eq(check.N));
     ASSERT_THAT(check.sum.load(), Eq(check.SUM_N));
@@ -98,9 +101,12 @@ TEST(Subscription, SyncPublishReceivesAllResponses)
         const long SUM_N = 4950L;
     } check;
 
-    xmsg::test::ProxyThread proxy_thread{};
+    xmsg::test::ProxyThread proxy_thread;
 
-    auto syncpub_thread = std::thread{[&]() {
+    SimpleCondition sub_ready;
+    SimpleCondition all_msg;
+
+    auto sub_thread = std::thread{[&]() {
         try {
             auto sub_actor = xmsg::xMsg{"test_subscriber"};
             auto sub_con = sub_actor.connect();
@@ -115,25 +121,36 @@ TEST(Subscription, SyncPublishReceivesAllResponses)
             };
 
             auto sub = sub_actor.subscribe(sub_topic, std::move(sub_con), sub_cb);
+            sub_ready.notify_one();
 
+            all_msg.wait_for(8000);
+            sub_actor.unsubscribe(std::move(sub));
+        } catch (std::exception& e) {
+            std::cerr << "Subscriber error: " << e.what() << std::endl;
+        }
+    }};
+
+    auto pub_thread = std::thread{[&]() {
+        try {
+            sub_ready.wait_for(1000);
             auto pub_actor = xmsg::xMsg{"test_publisher"};
             auto pub_con = pub_actor.connect();
             auto pub_topic = xmsg::Topic::raw("test_topic");
             for (int i = 0; i < check.N; i++) {
                 auto msg = xmsg::make_message(pub_topic, i);
-                auto res_msg = pub_actor.sync_publish(pub_con, msg, 1000);
-                auto data = xmsg::parse_message<int>(res_msg);
+                auto r_msg = pub_actor.sync_publish(pub_con, msg, 1000);
+                auto r_data = xmsg::parse_message<int>(r_msg);
                 check.counter.fetch_add(1);
-                check.sum.fetch_add(data);
+                check.sum.fetch_add(r_data);
             }
-
-            sub_actor.unsubscribe(std::move(sub));
         } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "Publisher error: " << e.what() << std::endl;
         }
     }};
 
-    syncpub_thread.join();
+    pub_thread.join();
+    all_msg.notify_one();
+    sub_thread.join();
 
     ASSERT_THAT(check.counter.load(), Eq(check.N));
     ASSERT_THAT(check.sum.load(), Eq(check.SUM_N));
