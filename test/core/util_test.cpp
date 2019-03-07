@@ -3,6 +3,7 @@
 #include <gmock/gmock.h>
 
 #include <iostream>
+#include <thread>
 
 using namespace testing;
 using namespace xmsg;
@@ -67,6 +68,27 @@ TEST(IpUtils, CheckOnlyIPv4)
         ASSERT_FALSE(is_ip(addr));
     }
 }
+
+
+#if THREAD_SANITIZER
+TEST(IpUtils, ThreadSafeGeneration)
+{
+    auto reader_thread = std::thread{[]{
+        for (int i = 0; i < 8; ++i) {
+            util::localhost();
+        }
+    }};
+
+    auto updater_thread = std::thread{[]{
+        for (int i = 0; i < 8; ++i) {
+            util::update_localhost_addrs();
+        }
+    }};
+
+    reader_thread.join();
+    updater_thread.join();
+}
+#endif
 
 
 

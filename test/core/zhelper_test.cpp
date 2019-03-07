@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
-#include <iostream>
 #include <limits>
 #include <thread>
+#include <vector>
 
 using namespace testing;
 using namespace xmsg;
@@ -77,16 +77,16 @@ TEST(RandomControlId, NineDigitsLong)
 
 TEST(RandomControlId, SameThreeDigitsPrefix)
 {
-    auto pre1 = detail::get_random_id().substr(1, 4);
-    auto pre2 = detail::get_random_id().substr(1, 4);
-    auto pre3 = detail::get_random_id().substr(1, 4);
+    auto pre1 = detail::get_random_id().substr(1, 3);
+    auto pre2 = detail::get_random_id().substr(1, 3);
+    auto pre3 = detail::get_random_id().substr(1, 3);
 
     ASSERT_EQ(pre1, pre2);
     ASSERT_EQ(pre2, pre3);
 }
 
 
-TEST(RandomControlId, FourthDigitIsCppIdentifier)
+TEST(RandomControlId, FirstDigitIsCppIdentifier)
 {
     auto id1 = detail::get_random_id();
     auto id2 = detail::get_random_id();
@@ -108,6 +108,26 @@ TEST(RandomControlId, RamdomLastFiveDigits)
     ASSERT_NE(suff1, suff3);
     ASSERT_NE(suff2, suff3);
 }
+
+
+#if THREAD_SANITIZER
+TEST(RandomControlId, ThreadSafeGeneration)
+{
+    std::vector<std::thread> threads;
+
+    for (int i = 0; i < 8; ++i) {
+        threads.emplace_back([]() {
+            for (int i = 0; i < 25; i++) {
+                detail::get_random_id();
+            }
+        });
+    }
+
+    for (auto& t: threads) {
+        t.join();
+    }
+}
+#endif
 
 
 int main(int argc, char* argv[])

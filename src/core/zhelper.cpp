@@ -24,27 +24,39 @@
 #include <xmsg/util.h>
 
 #include <atomic>
+#include <mutex>
 #include <random>
 #include <sstream>
 
 namespace {
 
-std::random_device rd;
-std::mt19937_64 rng{rd()};
+class RandomGenerator
+{
+public:
+    template<typename D>
+    auto operator()(D& dist)
+    {
+        std::lock_guard<std::mutex> guard{mtx_};
+        return dist(rng_);
+    }
+
+private:
+    std::mutex mtx_;
+
+    std::mt19937_64 rng_{[]{
+        std::random_device rd;
+        return rd();
+    }()};
+} rng;
+
 
 // language identifier (Java:1, C++:2, Python:3)
 const auto cpp_id = 2;
 
-// replyTo generation: format is "ret:<id>:2[dddddd]"
-const auto rt_seq_size = 1'000'000;
-const auto rt_seq_base = cpp_id * rt_seq_size;
-auto rt_gen = std::uniform_int_distribution<std::uint_fast32_t>{0, 999'999};
-std::atomic_uint_fast32_t rt_seq{rt_gen(rng)};
-
-// ID generation: format is 9 digits: 2[ppp][ddddd]
-auto id_gen = std::uniform_int_distribution<int>{0, 99};
-const auto ip_hash = std::hash<std::string>{}(xmsg::util::localhost());
-const auto id_prefix = cpp_id * 100'000'000 + (ip_hash % 1000) * 100'000;
+std::atomic_uint_fast32_t rt_seq{[]{
+    auto d = std::uniform_int_distribution<std::uint_fast32_t>{0, 999'999};
+    return rng(d);
+}()};
 
 }
 
@@ -52,9 +64,14 @@ const auto id_prefix = cpp_id * 100'000'000 + (ip_hash % 1000) * 100'000;
 namespace xmsg {
 namespace detail {
 
+// replyTo generation: format is "ret:<id>:2[dddddd]"
 std::string get_unique_replyto(const std::string& subject)
 {
+    static constexpr auto rt_seq_size = 1'000'000;
+    static constexpr auto rt_seq_base = cpp_id * rt_seq_size;
+
     auto id = ++rt_seq % rt_seq_size + rt_seq_base;
+
     return "ret:" + subject + ":" + std::to_string(id);
 }
 
@@ -65,19 +82,28 @@ void set_unique_replyto(std::uint_fast32_t value)
 }
 
 
+// actor unique ID: format is 8 digits: [dddddddd]
 std::string encode_identity(const std::string& address, const std::string& name)
 {
-    std::uniform_int_distribution<int> hash_gen{0, 99};
-    std::string id = address + "#" + name + "#" + std::to_string(hash_gen(rng));
+    std::uniform_int_distribution<std::uint_fast8_t> dist{0, 99};
+    std::string id = address + "#" + name + "#" + std::to_string(rng(dist));
     std::stringstream ss;
     ss << std::hex << std::hash<std::string>{}(id);
     return ss.str().substr(0, 8);
 }
 
 
+// control ID generation: format is 9 digits: 2[ppp][ddddd]
 std::string get_random_id()
 {
-    return std::to_string(id_prefix + id_gen(rng));
+    static const auto id_prefix = []{
+        auto ip_hash = std::hash<std::string>{}(util::localhost());
+        return cpp_id * 100'000'000 + (ip_hash % 1000) * 100'000;
+    }();
+
+    std::uniform_int_distribution<std::uint_fast32_t> id_dist{0, 99'999};
+
+    return std::to_string(id_prefix + rng(id_dist));
 }
 
 } // end namespace util

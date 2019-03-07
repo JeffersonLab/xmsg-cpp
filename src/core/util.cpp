@@ -21,54 +21,38 @@
 
 #include <xmsg/util.h>
 
-#include <arpa/inet.h>
 #include <chrono>
-#include <ifaddrs.h>
-#include <netdb.h>
 #include <regex>
+#include <shared_mutex>
 #include <system_error>
 #include <thread>
 
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netdb.h>
+
 
 namespace {
-
-std::vector<std::string> localhost_addrs;
 
 // clang-format off
 const auto ip_regex = std::regex{"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
                                      "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"};
 // clang-format on
 
-}
 
-
-namespace xmsg {
-
-namespace util {
-
-std::string localhost()
+std::vector<std::string> get_addresses()
 {
-    return to_host_addr("localhost");
-}
+    struct AddrList {
+        AddrList() { getifaddrs(&ifl); }
 
+        ~AddrList() { if (ifl != nullptr) freeifaddrs(ifl); }
 
-const std::vector<std::string>& get_localhost_addrs()
-{
-    if (localhost_addrs.empty()) {
-        update_localhost_addrs();
-    }
-    return localhost_addrs;
-}
+        struct ifaddrs* ifl = nullptr;
+    } ifl;
 
+    std::vector<std::string> all_addrs;
 
-void update_localhost_addrs()
-{
-    struct ifaddrs* ifl = nullptr;
-    getifaddrs(&ifl);
-
-    std::vector<std::string> tmp_addrs;
-
-    for (struct ifaddrs* ifa = ifl; ifa != nullptr; ifa = ifa->ifa_next) {
+    for (struct ifaddrs* ifa = ifl.ifl; ifa != nullptr; ifa = ifa->ifa_next) {
         if (ifa->ifa_addr == nullptr) {
             continue;
         }
@@ -79,14 +63,81 @@ void update_localhost_addrs()
 
             auto addr = std::string{addr_buf};
             if (addr.compare(0, 3, "127") != 0) {
-                tmp_addrs.push_back(std::move(addr));
+                all_addrs.push_back(std::move(addr));
             }
         }
     }
-    std::swap(tmp_addrs, localhost_addrs);
-    if (ifl != nullptr) {
-        freeifaddrs(ifl);
+
+    return all_addrs;
+}
+
+
+std::string get_host_address(const std::string& hostname)
+{
+    struct hostent* h = gethostbyname(hostname.data());
+    if (h == nullptr) {
+        throw std::system_error{EFAULT, std::system_category()};
     }
+    return { inet_ntoa(*((struct in_addr*) h->h_addr)) };
+}
+
+
+class LocalAddrs
+{
+public:
+    void update_addrs()
+    {
+        auto updated = get_addresses();
+        std::lock_guard<std::shared_timed_mutex> lk{mtx_};
+        std::swap(addr_, updated);
+    }
+
+    std::string get_first()
+    {
+        std::shared_lock<std::shared_timed_mutex> lk{mtx_};
+        return addr_[0];
+    }
+
+    std::vector<std::string> get_addrs()
+    {
+        std::shared_lock<std::shared_timed_mutex> lk{mtx_};
+        return addr_;
+    }
+
+private:
+    std::shared_timed_mutex mtx_;
+    std::vector<std::string> addr_ = get_addresses();
+};
+
+
+LocalAddrs& local_addrs()
+{
+    static auto* addrs = new LocalAddrs{};
+    return *addrs;
+}
+
+}
+
+
+namespace xmsg {
+
+namespace util {
+
+std::string localhost()
+{
+    return local_addrs().get_first();
+}
+
+
+std::vector<std::string> get_localhost_addrs()
+{
+    return local_addrs().get_addrs();
+}
+
+
+void update_localhost_addrs()
+{
+    local_addrs().update_addrs();
 }
 
 
@@ -96,13 +147,9 @@ std::string to_host_addr(const std::string& hostname)
         return { hostname };
     }
     if (hostname == "localhost") {
-        return get_localhost_addrs()[0];
+        return local_addrs().get_first();
     }
-    struct hostent* h = gethostbyname(hostname.data());
-    if (h == nullptr) {
-        throw std::system_error{EFAULT, std::system_category()};
-    }
-    return { inet_ntoa(*((struct in_addr*) h->h_addr)) };
+    return get_host_address(hostname);
 }
 
 

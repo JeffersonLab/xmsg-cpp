@@ -3,6 +3,10 @@
 #
 unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
+if(ENABLE_THREAD_SANITIZER)
+  add_compile_definitions(THREAD_SANITIZER)
+endif()
+
 
 #----------------------------------------------------------------------
 # Public interface tests
@@ -54,6 +58,8 @@ foreach(name IN LISTS XMSG_INTEGRATION_TESTS)
   target_link_libraries(test_${name} PRIVATE xMsg::xmsg GTest::GMock)
 endforeach()
 
+set_tests_properties(test_subscription PROPERTIES TIMEOUT 25)
+
 add_custom_target(integration_test
   COMMAND ${CMAKE_CTEST_COMMAND} -C Integration)
 
@@ -64,3 +70,6 @@ add_custom_target(integration_test
 add_executable(test_registration registrar_test.cpp)
 target_link_libraries(test_registration PRIVATE xMsg::xmsg)
 target_include_directories(test_registration PRIVATE "${PROJECT_SOURCE_DIR}/src/core")
+
+add_executable(test_addr_resolution addr_resolution_test.cpp)
+target_link_libraries(test_addr_resolution PRIVATE xMsg::xmsg)

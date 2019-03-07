@@ -14,12 +14,18 @@ set(XMSG_FILES
 )
 
 add_library(xmsg ${XMSG_FILES} $<TARGET_OBJECTS:xmsgproto_obj>)
+
 target_link_libraries(xmsg xmsgproto ZeroMQ::libzmq)
 target_include_directories(xmsg PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_include_directories(xmsg SYSTEM PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/third_party>)
+
+if(ENABLE_THREAD_SANITIZER)
+  target_compile_options(xmsg PUBLIC ${THREAD_SANITIZER})
+  target_link_libraries(xmsg ${THREAD_SANITIZER})
+endif()
 
 add_library(xMsg::xmsg ALIAS xmsg)
 

@@ -50,6 +50,12 @@ if(MASTER_PROJECT)
   endif()
 
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+  option(ENABLE_THREAD_SANITIZER "Enable thread-sanitizer support" OFF)
+
+  if(ENABLE_THREAD_SANITIZER)
+    set(THREAD_SANITIZER -fsanitize=thread -fno-omit-frame-pointer)
+  endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 14)

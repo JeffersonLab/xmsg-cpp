@@ -50,7 +50,7 @@ std::string localhost();
  * \return vector of IP addresses
  * \throws std::system_error if an I/O error occurs.
  */
-const std::vector<std::string>& get_localhost_addrs();
+std::vector<std::string> get_localhost_addrs();
 
 /**
  * Updates the IP addresses of the local node.
