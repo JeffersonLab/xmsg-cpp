@@ -170,6 +170,7 @@ TEST(MultiThreadPublisher, SuscribeReceivesAllMessages)
     } check;
 
     xmsg::test::ProxyThread proxy_thread;
+
     SimpleCondition sub_ready;
     SimpleCondition all_msg;
 
@@ -194,7 +195,7 @@ TEST(MultiThreadPublisher, SuscribeReceivesAllMessages)
             all_msg.wait_for(4000);
             actor.unsubscribe(std::move(sub));
         } catch (std::exception& e) {
-            std::cerr << e.what() << std::endl;
+            std::cerr << "Subscriber error: " << e.what() << std::endl;
         }
     }};
 
@@ -212,15 +213,16 @@ TEST(MultiThreadPublisher, SuscribeReceivesAllMessages)
                     pub_actor.publish(connection, msg);
                 }
             } catch (std::exception& e) {
-                std::cerr << e.what() << std::endl;
+                std::cerr << "Publisher " << i << " error: " << e.what()
+                          << std::endl;
             }
         });
     }
 
-    sub_thread.join();
     for (auto& t : pub_threads) {
         t.join();
     }
+    sub_thread.join();
 
     ASSERT_THAT(check.counter.load(), Eq(check.N));
     ASSERT_THAT(check.sum.load(), Eq(check.SUM_N));
