@@ -50,9 +50,9 @@ TEST(Subscription, SuscribeReceivesAllMessages)
             auto topic = xmsg::Topic::raw("test_topic");
             auto cb = [&](xmsg::Message& msg) {
                 auto i = xmsg::parse_message<int>(msg);
-                auto n = check.counter.fetch_add(1);
-                check.sum.fetch_add(i);
-                if (++n == check.N) {
+                auto n = ++check.counter;
+                check.sum += i;
+                if (n == check.N) {
                     all_msg.notify_one();
                 }
             };
@@ -140,8 +140,8 @@ TEST(Subscription, SyncPublishReceivesAllResponses)
                 auto msg = xmsg::make_message(pub_topic, i);
                 auto r_msg = pub_actor.sync_publish(pub_con, msg, 1000);
                 auto r_data = xmsg::parse_message<int>(r_msg);
-                check.counter.fetch_add(1);
-                check.sum.fetch_add(r_data);
+                ++check.counter;
+                check.sum += r_data;
             }
         } catch (std::exception& e) {
             std::cerr << "Publisher error: " << e.what() << std::endl;
@@ -182,9 +182,9 @@ TEST(MultiThreadPublisher, SuscribeReceivesAllMessages)
             auto topic = xmsg::Topic::raw("test_topic");
             auto cb = [&](xmsg::Message& msg) {
                 auto i = xmsg::parse_message<int>(msg);
-                auto n = check.counter.fetch_add(1);
-                check.sum.fetch_add(i);
-                if (++n == check.N) {
+                auto n = ++check.counter;
+                check.sum += i;
+                if (n == check.N) {
                     all_msg.notify_one();
                 }
             };
@@ -283,8 +283,8 @@ TEST(MultiThreadPublisher, SyncPublishReceivesAllResponses)
                     auto msg = xmsg::make_message(topic, j);
                     auto r_msg = pub_actor.sync_publish(con, msg, 1000);
                     auto r_data = xmsg::parse_message<int>(r_msg);
-                    check.counter.fetch_add(1);
-                    check.sum.fetch_add(r_data);
+                    ++check.counter;
+                    check.sum += r_data;
                 }
             } catch (std::exception& e) {
                 std::cerr << "Publisher " << i << " error: " << e.what()
