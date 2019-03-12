@@ -64,7 +64,7 @@ public:
     /// Sends the message through the proxy
     void send(Message& msg);
     /// Receives a message through the proxy
-    Message recv();
+    RawMessage recv();
 
     /// Subscribes to messages of the given topic through the proxy
     void subscribe(const Topic& topic);
@@ -84,6 +84,9 @@ private:
     zmq::socket_t control_;
     std::string id_;
 };
+
+
+Message parse_message(RawMessage& msg);
 
 } // end namespace detail
 } // end namespace xmsg

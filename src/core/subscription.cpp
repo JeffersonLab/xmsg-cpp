@@ -22,6 +22,7 @@
 #include <xmsg/subscription.h>
 
 #include "connection_driver.h"
+#include "likely.h"
 
 #include <xmsg/message.h>
 #include <xmsg/util.h>
@@ -79,8 +80,11 @@ void Subscription::run()
     while (is_alive_.load()) {
         try {
             if (poller.poll(timeout)) {
-                auto msg = connection_->recv();
-                handler_(msg);
+                auto raw_msg = connection_->recv();
+                if (XMSG_LIKELY(raw_msg.size() == 3)) {
+                    auto msg = detail::parse_message(raw_msg);
+                    handler_(msg);
+                }
             }
         } catch (std::exception& e) {
             std::cerr << e.what() << std::endl;

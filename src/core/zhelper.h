@@ -87,26 +87,26 @@ private:
 };
 
 
-template<size_t N>
-using RawMessage = std::array<zmq::message_t, N>;
+class RawMessage {
+public:
+    RawMessage(zmq::socket_t& socket);
 
-template<size_t N>
-RawMessage<N> recv_msg(zmq::socket_t& socket)
-{
-    auto multi_msg = RawMessage<N>{{}};
-    auto counter = size_t{0};
-    for (auto& msg : multi_msg) {
-        socket.recv(&msg);
-        ++counter;
-        if (!msg.more()) {
-            break;
-        }
+    auto& operator[](std::size_t idx)
+    {
+        return parts[idx];
     }
-    if (counter != N || multi_msg.back().more()) {
-        throw std::runtime_error{"Invalid multi-part message"};
+
+    std::size_t size()
+    {
+        return counter;
     }
-    return multi_msg;
-}
+
+private:
+    static const size_t msg_size = 3;
+
+    std::size_t counter = 0;
+    std::array<zmq::message_t, msg_size> parts;
+};
 
 
 inline

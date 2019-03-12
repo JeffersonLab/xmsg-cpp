@@ -113,7 +113,13 @@ void Proxy::control()
 
     while (is_alive_) {
         try {
-            auto in_msg = detail::recv_msg<3>(control);
+            auto in_msg = detail::RawMessage{control};
+            if (in_msg.size() != 3) {
+                std::lock_guard<std::mutex> lock(mtx);
+                std::cerr << "proxy: invalid multi-part control message"
+                          << std::endl;
+                continue;
+            }
 
             auto type = detail::to_string(in_msg[1]);
             auto id = detail::to_string(in_msg[2]);

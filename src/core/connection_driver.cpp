@@ -72,8 +72,10 @@ void ProxyDriver::connect()
             pub_.send(identity.data(), identity.size(), 0);
 
             if (poller.poll(100)) {
-                auto response = detail::recv_msg<1>(control_);
-                break;
+                auto response = detail::RawMessage{control_};
+                if (response.size() == 1) {
+                    break;
+                }
             }
         } catch (zmq::error_t& e) {
             // TODO handle reconnect
@@ -100,19 +102,10 @@ void ProxyDriver::send(Message& msg)
 }
 
 
-Message ProxyDriver::recv()
+RawMessage ProxyDriver::recv()
 {
-    auto multi_msg = detail::recv_msg<3>(sub_);
+    return detail::RawMessage{sub_};
 
-    auto topic = detail::to_string(multi_msg[0]);
-    auto meta = proto::make_meta();
-    meta->ParseFromArray(multi_msg[1].data(), multi_msg[1].size());
-
-    auto data_ptr = multi_msg[2].data<std::uint8_t>();
-    auto data_size = multi_msg[2].size();
-    auto data = std::vector<std::uint8_t>(data_ptr, data_ptr + data_size);
-
-    return {Topic::raw(topic), std::move(meta), std::move(data)};
 }
 
 
@@ -134,8 +127,10 @@ void ProxyDriver::subscribe(const Topic& topic)
             pub_.send(identity.data(), identity.size(), 0);
 
             if (poller.poll(100)) {
-                auto response = detail::recv_msg<2>(sub_);
-                break;
+                auto response = detail::RawMessage{sub_};
+                if (response.size() == 2) {
+                    break;
+                }
             }
         } catch (zmq::error_t& e) {
             // TODO handle reconnect
@@ -158,6 +153,20 @@ void ProxyDriver::unsubscribe(const Topic& topic)
 const ProxyAddress& ProxyDriver::address()
 {
     return addr_;
+}
+
+
+Message parse_message(RawMessage& multi_msg)
+{
+    auto topic = detail::to_string(multi_msg[0]);
+    auto meta = proto::make_meta();
+    meta->ParseFromArray(multi_msg[1].data(), multi_msg[1].size());
+
+    auto data_ptr = multi_msg[2].data<std::uint8_t>();
+    auto data_size = multi_msg[2].size();
+    auto data = std::vector<std::uint8_t>(data_ptr, data_ptr + data_size);
+
+    return {Topic::raw(topic), std::move(meta), std::move(data)};
 }
 
 } // end namespace detail

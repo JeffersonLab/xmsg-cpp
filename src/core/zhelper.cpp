@@ -21,6 +21,8 @@
 
 #include "zhelper.h"
 
+#include "likely.h"
+
 #include <xmsg/util.h>
 
 #include <atomic>
@@ -63,6 +65,32 @@ std::atomic_uint_fast32_t rt_seq{[]{
 
 namespace xmsg {
 namespace detail {
+
+// Read up to 3-part messages. Any message with more parts is unexpected and
+// invalid.
+RawMessage::RawMessage(zmq::socket_t& socket)
+{
+    while (true) {
+        auto& msg = parts[counter];
+        socket.recv(&msg);
+        ++counter;
+        if (counter == msg_size || !msg.more()) {
+            break;
+        }
+    }
+
+    if (XMSG_UNLIKELY(parts.back().more())) {
+        while (true) {
+            zmq::message_t msg;
+            socket.recv(&msg);
+            if (!msg.more()) {
+                break;
+            }
+        }
+        throw std::runtime_error{"Invalid multi-part message"};
+    }
+}
+
 
 // replyTo generation: format is "ret:<id>:2[dddddd]"
 std::string get_unique_replyto(const std::string& subject)

@@ -26,6 +26,7 @@
 #include <xmsg/util.h>
 
 #include "connection_driver.h"
+#include "likely.h"
 #include "registration_driver.h"
 #ifdef __APPLE__
 #include "thread_local.h"
@@ -170,8 +171,10 @@ Message xMsg::sync_publish(ProxyConnection& connection,
     auto t = 0;
     while (t < timeout) {
         if (sub.poll(dt)) {
-            auto msg = connection->recv();
-            return msg;
+            auto raw_msg = connection->recv();
+            if (XMSG_LIKELY(raw_msg.size() == 3)) {
+                return detail::parse_message(raw_msg);
+            }
         }
         t += dt;
     }
