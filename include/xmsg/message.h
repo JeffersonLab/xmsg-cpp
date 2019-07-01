@@ -88,8 +88,7 @@ public:
     template<typename T, typename V>
     Message(T&& topic, std::unique_ptr<proto::Meta>&& metadata, V&& data)
       : topic_{std::forward<T>(topic)}
-      , meta_{metadata ? std::move(metadata)
-                       : throw std::invalid_argument{"null metadata"}}
+      , meta_{std::move(metadata)}
       , data_{std::forward<V>(data)}
     {
         // nothing
