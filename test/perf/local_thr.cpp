@@ -71,13 +71,14 @@ int main(int argc, char** argv)
         long throughput = (long) (message_count / (double) elapsed_time * 1000000L);
         double megabits = (double) (throughput * message_size * 8) / 1000000;
         double latency = (double) elapsed_time / (message_count);
-
+        double nBits = 8;
         printf("message elapsed: %.3f [s]\n", (double) elapsed_time / 1000000L);
         printf("message size: %ld [B]\n", message_size);
         printf("message count: %ld\n", message_count);
         printf("mean transfer time: %.3f [us]\n", latency);
         printf("mean transfer rate: %d [msg/s]\n", (int) throughput);
         printf("mean throughput: %.3f [Mb/s]\n", megabits);
+        printf("mean throughput: %.3f [MByte/s]\n", megabits/nBits);
 
         subscriber.unsubscribe(std::move(sub));
 
