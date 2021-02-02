@@ -194,7 +194,11 @@ inline T parse_data(const Data& data)
  */
 inline std::vector<std::uint8_t> serialize_data(const Data& data)
 {
+#if GOOGLE_PROTOBUF_VERSION >= 3010000
+    auto buffer = std::vector<std::uint8_t>(data.ByteSizeLong());
+#else
     auto buffer = std::vector<std::uint8_t>(data.ByteSize());
+#endif
     data.SerializeToArray(buffer.data(), buffer.size());
     return buffer;
 }
