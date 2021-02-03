@@ -1,0 +1,47 @@
+name: xMsg CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - master
+
+env:
+  BUILD_TYPE: RelWithDebInfo
+  INSTALL_DIR: $HOME/.local
+  MAKEFLAGS: -j2
+
+jobs:
+  build_default:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt install libzmq5-dev libprotobuf-dev protobuf-compiler
+
+      - name: Build project
+        run: |
+          ./configure --prefix=${{ env.INSTALL_DIR }} --build-type=${{ env.BUILD_TYPE }}
+          make
+          make test && make integration_test
+
+  build_macos:
+    name: Build on macOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: brew install zeromq protobuf
+
+      - name: Build project
+        run: |
+          ./configure --prefix=${{ env.INSTALL_DIR }} --build-type=${{ env.BUILD_TYPE }}
+          make
+          make test && make integration_test
