@@ -63,11 +63,11 @@ Install CMake using [Homebrew](https://brew.sh/):
 xMsg uses [Protocol Buffers](https://developers.google.com/protocol-buffers/docs/downloads)
 and [ZeroMQ](http://zeromq.org/intro:get-the-software).
 
-#### Ubuntu 16.04 and 18.04
+#### Ubuntu 18.04 and 20.04
 
 Install from the repositories:
 
-    $ sudo apt install libzmq3-dev libprotobuf-dev protobuf-compiler
+    $ sudo apt install libzmq5-dev libprotobuf-dev protobuf-compiler
 
 #### macOS
 
