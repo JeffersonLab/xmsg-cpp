@@ -42,7 +42,7 @@ The reference documentation is available at <https://claraweb.jlab.org/xmsg/>.
 
 xMsg requires a C++14 compiler and CMake 3.5+
 
-#### Ubuntu 16.04 and 18.04
+#### Ubuntu 18.04 and 20.04
 
 Install GCC and CMake from the repositories:
 
