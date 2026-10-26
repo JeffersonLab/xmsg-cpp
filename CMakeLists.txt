@@ -1,5 +1,14 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.5.1...3.29)
 project(xMsg LANGUAGES CXX)
+
+# Extract downloaded archives with the current time as timestamps.
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+# Keep calling FetchContent_Populate() directly for the third-party deps.
+if(POLICY CMP0169)
+  cmake_policy(SET CMP0169 OLD)
+endif()
 
 set(MASTER_PROJECT OFF)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
